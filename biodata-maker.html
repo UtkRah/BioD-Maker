@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shubh Vivah — Biodata Maker</title>
+<meta name="description" content="Create a beautiful Hindu marriage biodata with live preview. 6 unique templates. Download as PDF.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,500&family=Mukta:wght@400;500;600;700&family=Playfair+Display:wght@700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root{--font-display:'Cormorant Garamond',serif;--font-play:'Playfair Display',serif;--font-body:'Mukta',sans-serif;--font-lato:'Lato',sans-serif;}
+body[data-theme="kanku"]{--bg:#FBF3E7;--panel:#FFFFFF;--primary:#8B1E3F;--accent:#C9972C;--ink:#2B1810;--sub:#7A5C4A;--line:#E4CFA6;--card-bg:#FFFDF8;--accent-a:rgba(201,151,44,.13);}
+body[data-theme="royal"]{--bg:#F3EFE4;--panel:#FFFFFF;--primary:#1B3A5C;--accent:#C79A2E;--ink:#182430;--sub:#5C6B7A;--line:#D8CBA6;--card-bg:#FDFCF8;--accent-a:rgba(199,154,46,.13);}
+body[data-theme="mint"]{--bg:#F6F4EE;--panel:#FFFFFF;--primary:#2F5D50;--accent:#C08552;--ink:#26312C;--sub:#5F7268;--line:#D8CBAE;--card-bg:#FFFEFB;--accent-a:rgba(192,133,82,.13);}
+body[data-theme="minimal"]{--bg:#EFEFEC;--panel:#FFFFFF;--primary:#1A1A1A;--accent:#A8824F;--ink:#1F1F1F;--sub:#6B6B6B;--line:#D9D2C5;--card-bg:#FFFFFF;--accent-a:rgba(168,130,79,.13);}
+body[data-theme="rose"]{--bg:#FDF0F4;--panel:#FFFFFF;--primary:#A0325A;--accent:#D4896A;--ink:#3A1525;--sub:#8A5A6E;--line:#F0CCDA;--card-bg:#FFFAFC;--accent-a:rgba(212,137,106,.13);}
+body[data-theme="ocean"]{--bg:#EFF4F8;--panel:#FFFFFF;--primary:#0F4C75;--accent:#B5860D;--ink:#0D2B40;--sub:#4A6D85;--line:#BCD4E6;--card-bg:#FAFDFF;--accent-a:rgba(181,134,13,.13);}
+*,*::before,*::after{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-body);-webkit-font-smoothing:antialiased;}
+h1,h2,h3,.display{font-family:var(--font-display);}
+
+/* ---- TOPBAR ---- */
+header.topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 26px;background:var(--panel);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:40;flex-wrap:wrap;gap:12px;}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand svg{width:32px;height:32px;}
+.brand .name{font-family:var(--font-display);font-weight:700;font-size:1.45rem;color:var(--primary);}
+.brand .tag{font-size:.7rem;color:var(--sub);letter-spacing:.14em;text-transform:uppercase;margin-top:-2px;}
+.topbar-right{display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+.theme-switch{display:flex;align-items:center;gap:7px;}
+.theme-switch .lbl{font-size:.7rem;color:var(--sub);text-transform:uppercase;letter-spacing:.1em;}
+.swatch{width:24px;height:24px;border-radius:50%;cursor:pointer;border:2px solid transparent;display:inline-block;transition:transform .15s;}
+.swatch:hover{transform:scale(1.18);}
+.swatch.active{border-color:var(--ink);}
+.swatch[data-t="kanku"]{background:linear-gradient(135deg,#8B1E3F 50%,#C9972C 50%);}
+.swatch[data-t="royal"]{background:linear-gradient(135deg,#1B3A5C 50%,#C79A2E 50%);}
+.swatch[data-t="mint"]{background:linear-gradient(135deg,#2F5D50 50%,#C08552 50%);}
+.swatch[data-t="minimal"]{background:linear-gradient(135deg,#1A1A1A 50%,#A8824F 50%);}
+.swatch[data-t="rose"]{background:linear-gradient(135deg,#A0325A 50%,#D4896A 50%);}
+.swatch[data-t="ocean"]{background:linear-gradient(135deg,#0F4C75 50%,#B5860D 50%);}
+.btn{font-family:var(--font-body);font-weight:600;font-size:.85rem;border:none;border-radius:7px;padding:9px 16px;cursor:pointer;background:var(--primary);color:#fff;transition:transform .15s,opacity .15s;}
+.btn:hover{opacity:.88;}.btn:active{transform:scale(.97);}
+.btn.ghost{background:transparent;color:var(--primary);border:1.5px solid var(--primary);}
+.btn.danger{background:transparent;color:#b92b2b;border:1.5px solid #b92b2b;}
+.btn.small{padding:6px 12px;font-size:.78rem;}
+.acts{display:flex;gap:8px;flex-wrap:wrap;}
+
+/* ---- TEMPLATE PICKER ---- */
+.tpl-picker{background:var(--panel);border-bottom:1px solid var(--line);padding:10px 26px;display:flex;align-items:center;gap:12px;overflow-x:auto;}
+.tpl-picker .lbl{font-size:.7rem;color:var(--sub);text-transform:uppercase;letter-spacing:.1em;font-weight:600;white-space:nowrap;}
+.tpl-cards{display:flex;gap:10px;}
+.tpl-card{width:80px;cursor:pointer;text-align:center;flex-shrink:0;}
+.tpl-card .thumb{width:80px;height:54px;border-radius:7px;border:2px solid var(--line);overflow:hidden;transition:border-color .2s,transform .15s;background:#fff;}
+.tpl-card.active .thumb{border-color:var(--primary);box-shadow:0 0 0 2px var(--accent);}
+.tpl-card:hover .thumb{transform:translateY(-2px);}
+.tpl-card .tname{font-size:.64rem;color:var(--sub);margin-top:4px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;}
+.tpl-card.active .tname{color:var(--primary);}
+
+/* ---- LAYOUT ---- */
+.layout{display:grid;grid-template-columns:minmax(330px,450px) 1fr;gap:26px;max-width:1440px;margin:0 auto;padding:26px;align-items:start;}
+@media(max-width:980px){.layout{grid-template-columns:1fr;}}
+
+/* ---- FORM ---- */
+.form-panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;}
+fieldset{border:none;margin:0 0 20px;padding:0;}
+fieldset legend{font-family:var(--font-display);font-weight:700;font-size:1.1rem;color:var(--primary);padding:0 0 7px;border-bottom:1.5px solid var(--line);width:100%;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+fieldset legend .n{width:22px;height:22px;border-radius:50%;background:var(--primary);color:#fff;font-size:.7rem;font-family:var(--font-body);display:flex;align-items:center;justify-content:center;flex:none;}
+.field{margin-bottom:11px;}
+.field label{display:block;font-size:.73rem;color:var(--sub);margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em;font-weight:600;}
+.field input,.field select,.field textarea{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:7px;font-family:var(--font-body);font-size:.91rem;background:#fff;color:var(--ink);}
+.field input:focus,.field select:focus,.field textarea:focus{outline:2px solid var(--accent);outline-offset:1px;}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;}
+.radio-group{display:flex;gap:14px;margin-top:4px;flex-wrap:wrap;}
+.radio-group label{display:flex;align-items:center;gap:6px;font-size:.88rem;text-transform:none;color:var(--ink);font-weight:500;cursor:pointer;}
+.radio-group input{width:auto;}
+.repeat-row{border:1px dashed var(--line);border-radius:9px;padding:11px;margin-bottom:9px;position:relative;background:var(--bg);}
+.repeat-row .remove{position:absolute;top:8px;right:8px;background:none;border:none;color:var(--sub);cursor:pointer;font-size:.95rem;line-height:1;padding:2px 5px;border-radius:4px;}
+.repeat-row .remove:hover{color:#b92b2b;}
+.add-row-btn{width:100%;padding:8px;border:1.5px dashed var(--primary);border-radius:8px;background:none;color:var(--primary);font-weight:600;cursor:pointer;font-size:.83rem;}
+.photo-upload{display:flex;gap:9px;flex-wrap:wrap;}
+.photo-slot{width:62px;height:62px;border-radius:8px;border:1.5px dashed var(--line);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;overflow:hidden;font-size:.63rem;color:var(--sub);text-align:center;background:#fff;}
+.photo-slot:hover{border-color:var(--accent);}
+.photo-slot img{width:100%;height:100%;object-fit:cover;}
+.photo-slot input{position:absolute;inset:0;opacity:0;cursor:pointer;}
+.hint{font-size:.73rem;color:var(--sub);margin-top:6px;line-height:1.4;}
+.char-count{font-size:.67rem;color:var(--sub);text-align:right;margin-top:2px;}
+
+/* ---- PREVIEW ---- */
+.preview-wrap{display:flex;flex-direction:column;align-items:center;gap:14px;}
+.card-outer{background:var(--panel);padding:16px;border-radius:14px;border:1px solid var(--line);max-width:100%;overflow:auto;}
+#biodataCard{width:794px;max-width:100%;background:var(--card-bg);position:relative;color:var(--ink);font-family:var(--font-body);transition:opacity .25s;}
+#biodataCard.switching{opacity:0;}
+
+/* ---- TOAST ---- */
+#toastWrap{position:fixed;bottom:28px;right:28px;display:flex;flex-direction:column;gap:9px;z-index:9999;pointer-events:none;}
+.toast{background:#1a1a2e;color:#fff;padding:11px 18px;border-radius:10px;font-size:.84rem;font-family:var(--font-body);font-weight:500;box-shadow:0 4px 18px rgba(0,0,0,.25);border-left:3px solid var(--accent);animation:tIn .3s ease;pointer-events:auto;}
+.toast.out{animation:tOut .3s ease forwards;}
+@keyframes tIn{from{transform:translateX(80px);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes tOut{from{transform:translateX(0);opacity:1}to{transform:translateX(80px);opacity:0}}
+
+/* ---- MODAL ---- */
+.modal-overlay{position:fixed;inset:0;background:rgba(20,14,10,.72);display:none;align-items:center;justify-content:center;z-index:100;padding:24px;}
+.modal-overlay.open{display:flex;}
+.modal-box{background:#fff;border-radius:14px;padding:22px;max-width:540px;width:100%;max-height:85vh;overflow:auto;}
+.modal-box h3{margin:0 0 4px;font-family:var(--font-display);color:var(--primary);font-size:1.25rem;}
+.modal-box .msub{font-size:.78rem;color:var(--sub);margin:0 0 13px;}
+.gal-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;}
+.gal-grid .gi{aspect-ratio:1;border-radius:8px;overflow:hidden;background:#f1ece2;}
+.gal-grid .gi img{width:100%;height:100%;object-fit:cover;}
+.modal-close{display:block;margin:14px auto 0;background:none;border:1.5px solid var(--line);border-radius:8px;padding:7px 18px;cursor:pointer;font-weight:600;color:var(--ink);font-family:var(--font-body);}
+
+/* ============================================================
+   TEMPLATE 1 — CLASSIC SCROLL
+============================================================ */
+.tpl-classic{padding:44px 48px 38px;border:1px solid var(--line);}
+.tpl-classic .corn{position:absolute;width:62px;height:62px;opacity:.82;}
+.tpl-classic .corn.tl{top:10px;left:10px;}
+.tpl-classic .corn.tr{top:10px;right:10px;transform:scaleX(-1);}
+.tpl-classic .corn.bl{bottom:10px;left:10px;transform:scaleY(-1);}
+.tpl-classic .corn.br{bottom:10px;right:10px;transform:scale(-1,-1);}
+.tpl-classic .chead{text-align:center;margin-bottom:6px;}
+.tpl-classic .gbox{width:70px;height:70px;margin:0 auto 4px;}
+.tpl-classic .gbox img{width:100%;height:100%;object-fit:contain;border-radius:6px;}
+.tpl-classic .om{font-family:var(--font-display);font-size:.92rem;color:var(--primary);letter-spacing:.1em;margin-bottom:2px;}
+.tpl-classic .chead h1{margin:2px 0 0;font-size:2rem;color:var(--primary);font-weight:700;}
+.tpl-classic .chead .sub{font-size:.8rem;color:var(--sub);letter-spacing:.16em;text-transform:uppercase;margin-top:2px;}
+.tpl-classic .abadge{display:inline-block;background:var(--accent-a);color:var(--primary);font-size:.73rem;padding:2px 10px;border-radius:20px;font-weight:700;margin-top:4px;}
+.tpl-classic .grule{height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);margin:13px 0 17px;}
+.tpl-classic .pblock{display:flex;justify-content:center;margin-bottom:17px;}
+.tpl-classic .pclick{width:148px;height:148px;border-radius:50%;border:4px solid var(--accent);overflow:hidden;cursor:pointer;position:relative;background:#f1ece2;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(0,0,0,.12);}
+.tpl-classic .pclick img{width:100%;height:100%;object-fit:cover;}
+.tpl-classic .pclick .pmt{font-size:.68rem;color:var(--sub);text-align:center;padding:8px;}
+.tpl-classic .pbadge{position:absolute;bottom:6px;right:6px;background:var(--primary);color:#fff;font-size:.6rem;padding:2px 6px;border-radius:10px;font-weight:600;}
+.tpl-classic .stitle{font-family:var(--font-display);font-weight:700;font-size:1.08rem;color:var(--primary);margin:19px 0 9px;display:flex;align-items:center;gap:8px;}
+.tpl-classic .stitle::after{content:"";flex:1;height:1px;background:var(--line);}
+.tpl-classic table.dt{width:100%;border-collapse:collapse;font-size:.88rem;}
+.tpl-classic table.dt tr{border-bottom:1px solid var(--line);}
+.tpl-classic table.dt tr:last-child{border-bottom:none;}
+.tpl-classic table.dt td{padding:5px 4px;vertical-align:top;}
+.tpl-classic table.dt td.k{width:36%;color:var(--sub);font-weight:600;font-size:.8rem;text-transform:uppercase;letter-spacing:.03em;}
+.tpl-classic table.dt td.v{color:var(--ink);font-weight:500;}
+.tpl-classic .about-blk{background:var(--accent-a);border-left:3px solid var(--accent);padding:11px 15px;border-radius:0 8px 8px 0;font-size:.88rem;line-height:1.7;font-style:italic;}
+.tpl-classic .mlist{font-size:.87rem;line-height:1.85;}
+.tpl-classic .mlist .mrole{color:var(--sub);font-size:.71rem;text-transform:uppercase;letter-spacing:.04em;}
+.tpl-classic .rgrp{margin-bottom:11px;}
+.tpl-classic .cfoot{margin-top:22px;padding-top:12px;border-top:1px solid var(--line);text-align:center;font-size:.79rem;color:var(--sub);}
+.tpl-classic .cfoot .ct{color:var(--primary);font-weight:600;}
+
+/* ============================================================
+   TEMPLATE 2 — ROYAL ARCH
+============================================================ */
+.tpl-arch{border:2px solid var(--line);overflow:hidden;}
+.tpl-arch .ahdr{background:var(--primary);padding:30px 48px 22px;text-align:center;position:relative;}
+.tpl-arch .ahdr .wave{position:absolute;bottom:-1px;left:0;width:100%;}
+.tpl-arch .ahdr .gbox{width:58px;height:58px;margin:0 auto 6px;border-radius:50%;border:2px solid var(--accent);overflow:hidden;background:rgba(255,255,255,.1);}
+.tpl-arch .ahdr .gbox img{width:100%;height:100%;object-fit:cover;}
+.tpl-arch .ahdr .om{font-family:var(--font-display);color:var(--accent);font-size:.9rem;letter-spacing:.15em;}
+.tpl-arch .ahdr h1{color:#fff;font-size:2.2rem;margin:4px 0 2px;font-weight:700;text-shadow:0 2px 8px rgba(0,0,0,.3);}
+.tpl-arch .ahdr .sub{color:var(--accent);font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;}
+.tpl-arch .ahdr .achip{display:inline-block;background:rgba(255,255,255,.16);color:#fff;border:1px solid rgba(255,255,255,.28);padding:3px 12px;border-radius:20px;font-size:.76rem;margin-top:6px;}
+.tpl-arch .abody{display:grid;grid-template-columns:188px 1fr;gap:0;padding:12px 28px 28px;}
+.tpl-arch .aleft{padding-right:22px;border-right:1px solid var(--line);display:flex;flex-direction:column;align-items:center;gap:14px;padding-top:6px;}
+.tpl-arch .aphoto{width:138px;height:138px;border-radius:12px;overflow:hidden;border:3px solid var(--accent);cursor:pointer;position:relative;background:#f1ece2;display:flex;align-items:center;justify-content:center;}
+.tpl-arch .aphoto img{width:100%;height:100%;object-fit:cover;}
+.tpl-arch .aphoto .pmt{font-size:.64rem;color:var(--sub);text-align:center;}
+.tpl-arch .aphoto .pbadge{position:absolute;bottom:5px;right:5px;background:var(--primary);color:#fff;font-size:.58rem;padding:1px 5px;border-radius:8px;}
+.tpl-arch .actxt{width:100%;font-size:.78rem;color:var(--ink);text-align:center;line-height:1.9;}
+.tpl-arch .actxt .ci{display:flex;align-items:flex-start;gap:5px;justify-content:center;font-weight:500;font-size:.76rem;margin-bottom:2px;}
+.tpl-arch .actxt .ci .ico{color:var(--primary);flex-shrink:0;}
+.tpl-arch .aright{padding-left:22px;}
+.tpl-arch .asect{font-family:var(--font-display);font-size:1.02rem;color:var(--primary);font-weight:700;margin:16px 0 8px;padding-bottom:4px;border-bottom:1.5px solid var(--accent);}
+.tpl-arch .asect:first-child{margin-top:0;}
+.tpl-arch table.dt{width:100%;border-collapse:collapse;font-size:.83rem;}
+.tpl-arch table.dt td{padding:5px 4px;border-bottom:1px solid var(--line);vertical-align:top;}
+.tpl-arch table.dt tr:last-child td{border-bottom:none;}
+.tpl-arch table.dt td.k{width:38%;color:var(--sub);font-weight:600;font-size:.77rem;text-transform:uppercase;letter-spacing:.02em;}
+.tpl-arch table.dt td.v{color:var(--ink);font-weight:500;}
+.tpl-arch .about-blk{font-size:.83rem;line-height:1.7;font-style:italic;padding:9px 13px;border-left:3px solid var(--accent);background:var(--accent-a);border-radius:0 6px 6px 0;}
+.tpl-arch .afull{padding:0 28px 22px;border-top:1px solid var(--line);margin-top:12px;padding-top:14px;}
+.tpl-arch .mlist{font-size:.84rem;line-height:1.85;}
+.tpl-arch .mlist .mrole{color:var(--sub);font-size:.7rem;}
+.tpl-arch .rgrp{margin-bottom:10px;}
+.tpl-arch .afoot{text-align:center;border-top:1px solid var(--line);padding:12px;font-size:.78rem;color:var(--sub);}
+
+/* ============================================================
+   TEMPLATE 3 — LOTUS GARDEN
+============================================================ */
+.tpl-lotus{background:#FFF9F9;border:5px solid #F2C0CE;}
+.tpl-lotus .linner{padding:34px 42px 30px;border:1px solid #E8B4C0;margin:4px;}
+.tpl-lotus .lhead{text-align:center;margin-bottom:14px;}
+.tpl-lotus .gbox{width:62px;height:62px;margin:0 auto 5px;}
+.tpl-lotus .gbox img{width:100%;height:100%;border-radius:50%;object-fit:cover;}
+.tpl-lotus .om{color:#C05070;font-family:var(--font-display);font-size:.92rem;letter-spacing:.12em;margin-bottom:3px;}
+.tpl-lotus .lhead h1{font-size:2.1rem;color:#A0304A;font-weight:700;margin:0 0 2px;font-family:var(--font-play);}
+.tpl-lotus .lhead .sub{font-size:.78rem;color:#B87090;text-transform:uppercase;letter-spacing:.18em;}
+.tpl-lotus .lhead .abadge{display:inline-block;background:#FDEEF3;color:#A0304A;border:1px solid #E8B4C0;padding:2px 11px;border-radius:20px;font-size:.73rem;font-weight:700;margin-top:4px;}
+.tpl-lotus .ldiv{height:1px;background:linear-gradient(90deg,transparent,#E8B4C0,#C05070,#E8B4C0,transparent);margin:11px 0;}
+.tpl-lotus .lphoto{display:flex;justify-content:center;margin-bottom:18px;}
+.tpl-lotus .lpwrap{width:158px;height:158px;border-radius:50%;border:5px solid #E8B4C0;overflow:hidden;cursor:pointer;position:relative;background:#FDE8EE;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 3px #FFF9F9,0 0 0 5px #F0C8D4;}
+.tpl-lotus .lpwrap img{width:100%;height:100%;object-fit:cover;}
+.tpl-lotus .lpwrap .pmt{font-size:.66rem;color:#B87090;text-align:center;}
+.tpl-lotus .lpwrap .pbadge{position:absolute;bottom:8px;right:8px;background:#A0304A;color:#fff;font-size:.58rem;padding:2px 5px;border-radius:10px;}
+.tpl-lotus .lcols{display:grid;grid-template-columns:1fr 1fr;gap:22px;}
+.tpl-lotus .lstitle{font-family:var(--font-display);color:#A0304A;font-size:1.02rem;font-weight:700;margin:0 0 9px;display:flex;align-items:center;gap:6px;}
+.tpl-lotus .lstitle::before{content:'✿';font-size:.78rem;}
+.tpl-lotus table.dt{width:100%;border-collapse:collapse;font-size:.84rem;}
+.tpl-lotus table.dt td{padding:5px 3px;border-bottom:1px solid #F0D0D8;vertical-align:top;}
+.tpl-lotus table.dt tr:last-child td{border-bottom:none;}
+.tpl-lotus table.dt td.k{color:#B87090;font-weight:600;font-size:.76rem;text-transform:uppercase;letter-spacing:.02em;width:40%;}
+.tpl-lotus table.dt td.v{color:#3A1525;font-weight:500;}
+.tpl-lotus .about-blk{font-size:.87rem;line-height:1.7;color:#3A1525;font-style:italic;padding:10px 13px;background:#FDE8EE;border-radius:8px;border-left:3px solid #E8B4C0;}
+.tpl-lotus .mlist{font-size:.84rem;line-height:1.85;color:#3A1525;}
+.tpl-lotus .mlist .mrole{color:#B87090;font-size:.7rem;}
+.tpl-lotus .rgrp{margin-bottom:10px;}
+.tpl-lotus .lfoot{margin-top:18px;padding-top:11px;border-top:1px solid #F0D0D8;text-align:center;font-size:.78rem;color:#B87090;}
+.tpl-lotus .lfoot .ct{color:#A0304A;font-weight:600;}
+
+/* ============================================================
+   TEMPLATE 4 — SAFFRON PARCHMENT
+============================================================ */
+.tpl-parchment{background:#F7ECD8;border:1px solid #C8A870;}
+.tpl-parchment .pbanner{background:linear-gradient(135deg,#7B3A10,#C47320 55%,#7B3A10);padding:20px 46px;display:flex;align-items:center;gap:18px;}
+.tpl-parchment .pgbox{width:54px;height:54px;border-radius:50%;border:2px solid rgba(255,215,100,.5);overflow:hidden;flex-shrink:0;background:rgba(255,255,255,.12);}
+.tpl-parchment .pgbox img{width:100%;height:100%;object-fit:cover;}
+.tpl-parchment .ptitle{flex:1;}
+.tpl-parchment .om{color:rgba(255,215,100,.9);font-family:var(--font-display);font-size:.88rem;letter-spacing:.12em;}
+.tpl-parchment .pbanner h1{color:#fff;font-size:1.9rem;margin:0;font-weight:700;text-shadow:0 2px 5px rgba(0,0,0,.3);}
+.tpl-parchment .pbanner .sub{color:rgba(255,215,100,.78);font-size:.76rem;text-transform:uppercase;letter-spacing:.14em;}
+.tpl-parchment .pphoto-wrap{flex-shrink:0;}
+.tpl-parchment .pphoto{width:98px;height:108px;border-radius:8px;overflow:hidden;border:3px solid rgba(255,215,100,.65);cursor:pointer;position:relative;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;}
+.tpl-parchment .pphoto img{width:100%;height:100%;object-fit:cover;}
+.tpl-parchment .pphoto .pmt{font-size:.6rem;color:rgba(255,255,255,.7);text-align:center;}
+.tpl-parchment .pphoto .pbadge{position:absolute;bottom:4px;right:4px;background:rgba(0,0,0,.5);color:#fff;font-size:.57rem;padding:1px 4px;border-radius:8px;}
+.tpl-parchment .pbody{padding:22px 46px 28px;}
+.tpl-parchment .page{display:inline-block;background:rgba(139,69,19,.1);color:#8B4513;border:1px solid #C8A870;padding:3px 11px;border-radius:20px;font-size:.78rem;font-weight:700;margin-bottom:14px;}
+.tpl-parchment .psect{font-family:var(--font-display);color:#8B4513;font-size:1.08rem;font-weight:700;margin:18px 0 9px;display:flex;align-items:center;gap:10px;}
+.tpl-parchment .psect::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,#C8A870,transparent);}
+.tpl-parchment table.dt{width:100%;border-collapse:collapse;font-size:.87rem;}
+.tpl-parchment table.dt td{padding:5px 4px;border-bottom:1px dashed #DEC090;vertical-align:top;}
+.tpl-parchment table.dt tr:last-child td{border-bottom:none;}
+.tpl-parchment table.dt td.k{color:#8B4513;font-weight:700;font-size:.77rem;text-transform:uppercase;letter-spacing:.04em;width:34%;}
+.tpl-parchment table.dt td.v{color:#3D2010;font-weight:500;}
+.tpl-parchment .about-blk{font-size:.87rem;line-height:1.7;color:#3D2010;font-style:italic;padding:10px 15px;background:rgba(139,69,19,.07);border-left:3px solid #C8A870;border-radius:0 6px 6px 0;}
+.tpl-parchment .mlist{font-size:.85rem;line-height:1.85;color:#3D2010;}
+.tpl-parchment .mlist .mrole{color:#8B6540;font-size:.7rem;}
+.tpl-parchment .rgrp{margin-bottom:10px;}
+.tpl-parchment .pfoot{text-align:center;padding:14px;border-top:1px dashed #C8A870;font-size:.78rem;color:#8B6540;}
+.tpl-parchment .pfoot .ct{color:#8B4513;font-weight:700;}
+
+/* ============================================================
+   TEMPLATE 5 — MODERN SLATE
+============================================================ */
+.tpl-slate{background:#0F1117;color:#E8E6E1;border:none;}
+.tpl-slate .shdr{background:linear-gradient(135deg,#1A1F2E,#232840);padding:28px 38px;display:flex;align-items:center;gap:26px;border-bottom:1px solid #2A3050;}
+.tpl-slate .sphoto{width:108px;height:108px;border-radius:12px;overflow:hidden;border:2px solid #C9972C;flex-shrink:0;cursor:pointer;position:relative;background:#1A1F2E;display:flex;align-items:center;justify-content:center;}
+.tpl-slate .sphoto img{width:100%;height:100%;object-fit:cover;}
+.tpl-slate .sphoto .pmt{font-size:.63rem;color:#666;text-align:center;padding:8px;}
+.tpl-slate .sphoto .pbadge{position:absolute;bottom:5px;right:5px;background:#C9972C;color:#000;font-size:.58rem;padding:1px 5px;border-radius:8px;font-weight:700;}
+.tpl-slate .sinfo{flex:1;}
+.tpl-slate .som{color:#C9972C;font-family:var(--font-display);font-size:.84rem;letter-spacing:.12em;}
+.tpl-slate .sinfo h1{color:#fff;font-size:1.95rem;margin:4px 0 2px;font-weight:700;font-family:var(--font-lato);letter-spacing:.02em;}
+.tpl-slate .sinfo .sub{color:#8B9CC8;font-size:.78rem;text-transform:uppercase;letter-spacing:.14em;}
+.tpl-slate .schips{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px;}
+.tpl-slate .schip{background:rgba(201,151,44,.14);color:#C9972C;border:1px solid rgba(201,151,44,.28);padding:3px 10px;border-radius:20px;font-size:.73rem;font-weight:600;font-family:var(--font-lato);}
+.tpl-slate .sgbox{width:48px;height:48px;border-radius:50%;border:1px solid #C9972C;overflow:hidden;background:rgba(201,151,44,.1);flex-shrink:0;}
+.tpl-slate .sgbox img{width:100%;height:100%;object-fit:cover;}
+.tpl-slate .sbody{padding:26px 38px;}
+.tpl-slate .sgrid{display:grid;grid-template-columns:1fr 1fr;gap:22px;}
+.tpl-slate .ssect{color:#C9972C;font-size:.7rem;text-transform:uppercase;letter-spacing:.11em;font-weight:700;font-family:var(--font-lato);margin:0 0 11px;padding-bottom:6px;border-bottom:1px solid #2A3050;}
+.tpl-slate .srow{display:flex;justify-content:space-between;align-items:baseline;padding:5px 0;border-bottom:1px solid #1E2338;font-size:.84rem;}
+.tpl-slate .srow:last-child{border-bottom:none;}
+.tpl-slate .srow .sk{color:#6B7A9E;font-size:.76rem;font-weight:500;}
+.tpl-slate .srow .sv{color:#E8E6E1;font-weight:500;text-align:right;max-width:56%;}
+.tpl-slate .about-blk{background:rgba(201,151,44,.07);border:1px solid rgba(201,151,44,.2);padding:13px 16px;border-radius:10px;font-size:.87rem;line-height:1.7;color:#C8C4BC;font-style:italic;}
+.tpl-slate .mlist{font-size:.84rem;line-height:1.85;color:#C8C4BC;}
+.tpl-slate .mlist .mrole{color:#6B7A9E;font-size:.7rem;}
+.tpl-slate .rgrp{margin-bottom:10px;}
+.tpl-slate .sfoot{background:#1A1F2E;padding:14px 38px;text-align:center;font-size:.79rem;color:#6B7A9E;border-top:1px solid #2A3050;display:flex;justify-content:center;gap:20px;flex-wrap:wrap;}
+.tpl-slate .sfoot .ct{color:#C9972C;font-weight:600;}
+
+/* ============================================================
+   TEMPLATE 6 — GOLDEN MANDALA
+============================================================ */
+.tpl-mandala{background:#FFFAEE;border:1px solid #D4A843;}
+.tpl-mandala .mouter{padding:30px 46px 34px;}
+.tpl-mandala .mhead{text-align:center;margin-bottom:18px;}
+.tpl-mandala .mring{width:168px;height:168px;margin:0 auto 11px;position:relative;cursor:pointer;}
+.tpl-mandala .mring .rsvg{position:absolute;inset:0;width:100%;height:100%;}
+.tpl-mandala .mring .rphoto{position:absolute;inset:22px;border-radius:50%;overflow:hidden;background:#F5E8C0;display:flex;align-items:center;justify-content:center;}
+.tpl-mandala .mring .rphoto img{width:100%;height:100%;object-fit:cover;}
+.tpl-mandala .mring .rphoto .pmt{font-size:.6rem;color:#9A7840;text-align:center;}
+.tpl-mandala .mring .pbadge{position:absolute;bottom:24px;right:8px;background:#8B6914;color:#fff;font-size:.57rem;padding:2px 5px;border-radius:10px;z-index:2;}
+.tpl-mandala .mom{font-family:var(--font-display);color:#8B6914;font-size:.97rem;letter-spacing:.12em;margin-bottom:3px;}
+.tpl-mandala .mhead h1{font-size:2rem;color:#5C3A00;font-weight:700;margin:0 0 2px;}
+.tpl-mandala .mhead .sub{color:#9A7840;font-size:.78rem;text-transform:uppercase;letter-spacing:.18em;}
+.tpl-mandala .mhead .abadge{display:inline-block;background:linear-gradient(135deg,#D4A843,#F0C860);color:#3A2000;padding:3px 13px;border-radius:20px;font-size:.76rem;font-weight:700;margin-top:5px;}
+.tpl-mandala .mrule{display:flex;align-items:center;gap:9px;margin:12px 0;}
+.tpl-mandala .mrule::before,.tpl-mandala .mrule::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,#D4A843);}
+.tpl-mandala .mrule::after{background:linear-gradient(270deg,transparent,#D4A843);}
+.tpl-mandala .mrule .dia{color:#D4A843;font-size:1.1rem;}
+.tpl-mandala .mcols{display:grid;grid-template-columns:1fr 1fr;gap:26px;}
+.tpl-mandala .msect{font-family:var(--font-display);color:#5C3A00;font-size:1.02rem;font-weight:700;margin:0 0 9px;display:flex;align-items:center;gap:6px;}
+.tpl-mandala .msect::before{content:'◆';font-size:.57rem;color:#D4A843;}
+.tpl-mandala table.dt{width:100%;border-collapse:collapse;font-size:.86rem;}
+.tpl-mandala table.dt td{padding:5px 4px;border-bottom:1px solid #E8D090;vertical-align:top;}
+.tpl-mandala table.dt tr:last-child td{border-bottom:none;}
+.tpl-mandala table.dt td.k{color:#9A7840;font-weight:600;font-size:.76rem;text-transform:uppercase;letter-spacing:.02em;width:38%;}
+.tpl-mandala table.dt td.v{color:#3A2000;font-weight:500;}
+.tpl-mandala .about-blk{font-size:.87rem;line-height:1.7;color:#3A2000;font-style:italic;padding:11px 15px;background:rgba(212,168,67,.1);border:1px solid rgba(212,168,67,.28);border-radius:8px;}
+.tpl-mandala .mlist{font-size:.85rem;line-height:1.85;color:#3A2000;}
+.tpl-mandala .mlist .mrole{color:#9A7840;font-size:.7rem;}
+.tpl-mandala .rgrp{margin-bottom:10px;}
+.tpl-mandala .mfoot{margin-top:18px;padding-top:13px;border-top:1px solid #E8D090;text-align:center;font-size:.78rem;color:#9A7840;}
+.tpl-mandala .mfoot .ct{color:#5C3A00;font-weight:700;}
+
+/* ---- PRINT ---- */
+@media print{
+  header.topbar,.tpl-picker,.form-panel,.btn,footer.pagefoot,.preview-wrap>p,#toastWrap{display:none!important;}
+  body{background:white!important;}
+  .layout{display:block!important;padding:0!important;}
+  .preview-wrap{padding:0!important;}
+  .card-outer{border:none!important;padding:0!important;box-shadow:none!important;}
+  #biodataCard{width:100%!important;max-width:100%!important;}
+}
+</style>
+</head>
+<body data-theme="kanku">
+
+<header class="topbar">
+  <div class="brand">
+    <svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="48" fill="none" stroke="var(--accent)" stroke-width="3"/><text x="50" y="60" font-size="46" text-anchor="middle" fill="var(--primary)" font-family="serif">श्री</text></svg>
+    <div><div class="name">Shubh Vivah</div><div class="tag">Biodata Maker</div></div>
+  </div>
+  <div class="topbar-right">
+    <div class="theme-switch">
+      <span class="lbl">Theme</span>
+      <span class="swatch active" data-t="kanku" title="Kanku Gold"></span>
+      <span class="swatch" data-t="royal" title="Royal Peacock"></span>
+      <span class="swatch" data-t="mint" title="Blush Mint"></span>
+      <span class="swatch" data-t="minimal" title="Modern Minimal"></span>
+      <span class="swatch" data-t="rose" title="Rose Garden"></span>
+      <span class="swatch" data-t="ocean" title="Ocean Deep"></span>
+    </div>
+    <div class="acts">
+      <button class="btn danger small" id="resetBtn">↺ Reset</button>
+      <button class="btn ghost small" id="printBtn">Print</button>
+      <button class="btn small" id="downloadBtn">⬇ Download PDF</button>
+    </div>
+  </div>
+</header>
+
+<div class="tpl-picker">
+  <span class="lbl">Template</span>
+  <div class="tpl-cards">
+    <div class="tpl-card active" data-tpl="classic">
+      <div class="thumb"><svg viewBox="0 0 80 54"><rect width="80" height="54" fill="#FFFDF8"/><rect x="2" y="2" width="76" height="50" fill="none" stroke="#C9972C" stroke-width=".5" stroke-dasharray="2,1"/><circle cx="40" cy="14" r="5" fill="#E8D090"/><text x="40" y="17" text-anchor="middle" font-size="5" fill="#8B1E3F" font-family="serif">ॐ</text><rect x="20" y="23" width="40" height="1.5" fill="#C9972C" opacity=".5"/><circle cx="40" cy="33" r="7" fill="#E4CFA6"/><rect x="10" y="44" width="60" height="1.5" fill="#E4CFA6"/><rect x="14" y="47" width="52" height="1" fill="#E4CFA6"/></svg></div>
+      <div class="tname">Classic</div>
+    </div>
+    <div class="tpl-card" data-tpl="arch">
+      <div class="thumb"><svg viewBox="0 0 80 54"><rect width="80" height="54" fill="#FDFCF8"/><path d="M0 0 Q40 26 80 0 L80 20 Q40 44 0 20 Z" fill="#1B3A5C"/><text x="40" y="13" text-anchor="middle" font-size="6" fill="white" font-family="serif" font-weight="bold">Name</text><rect x="2" y="24" width="26" height="28" fill="#F3EFE4"/><rect x="32" y="24" width="46" height="28" fill="#F3EFE4"/><circle cx="15" cy="35" r="8" fill="#D8CBA6"/><rect x="34" y="27" width="40" height="1.5" fill="#D8CBA6"/><rect x="34" y="31" width="36" height="1" fill="#E8E0CC"/><rect x="34" y="34" width="38" height="1" fill="#E8E0CC"/><rect x="34" y="37" width="32" height="1" fill="#E8E0CC"/><rect x="34" y="40" width="36" height="1" fill="#E8E0CC"/></svg></div>
+      <div class="tname">Royal Arch</div>
+    </div>
+    <div class="tpl-card" data-tpl="lotus">
+      <div class="thumb"><svg viewBox="0 0 80 54"><rect width="80" height="54" fill="#FFF9F9"/><rect x="2" y="2" width="76" height="50" fill="none" stroke="#E8B4C0" stroke-width="1.5"/><text x="40" y="11" text-anchor="middle" font-size="5" fill="#C05070">✿ ✿ ✿</text><text x="40" y="19" text-anchor="middle" font-size="6" fill="#A0304A" font-family="serif" font-weight="bold">Name</text><circle cx="40" cy="30" r="7" fill="#F0C8D4" stroke="#E8B4C0" stroke-width="1.2"/><rect x="6" y="42" width="28" height="1" fill="#F0D0D8"/><rect x="6" y="45" width="22" height="1" fill="#F0D0D8"/><rect x="46" y="42" width="28" height="1" fill="#F0D0D8"/><rect x="46" y="45" width="22" height="1" fill="#F0D0D8"/></svg></div>
+      <div class="tname">Lotus</div>
+    </div>
+    <div class="tpl-card" data-tpl="parchment">
+      <div class="thumb"><svg viewBox="0 0 80 54"><rect width="80" height="54" fill="#F7ECD8"/><rect x="0" y="0" width="80" height="17" fill="#C47320"/><rect x="1" y="1" width="78" height="15" fill="#8B4513" opacity=".4"/><text x="36" y="11" text-anchor="middle" font-size="6" fill="white" font-family="serif" font-weight="bold">Name</text><circle cx="68" cy="9" r="5" fill="rgba(255,255,255,.2)" stroke="rgba(255,215,100,.5)" stroke-width=".8"/><rect x="6" y="21" width="68" height="1" fill="#C8A870" opacity=".5"/><rect x="6" y="25" width="40" height="1" fill="#DEC090"/><rect x="6" y="28" width="35" height="1" fill="#DEC090"/><rect x="6" y="31" width="42" height="1" fill="#DEC090"/><rect x="6" y="34" width="38" height="1" fill="#DEC090"/><rect x="6" y="40" width="68" height="1" fill="#C8A870" opacity=".4"/><rect x="6" y="44" width="30" height="1" fill="#DEC090"/><rect x="6" y="47" width="35" height="1" fill="#DEC090"/></svg></div>
+      <div class="tname">Parchment</div>
+    </div>
+    <div class="tpl-card" data-tpl="slate">
+      <div class="thumb"><svg viewBox="0 0 80 54"><rect width="80" height="54" fill="#0F1117"/><rect x="0" y="0" width="80" height="21" fill="#1A1F2E"/><rect x="4" y="4" width="13" height="13" rx="2.5" fill="#232840" stroke="#C9972C" stroke-width=".7"/><text x="10.5" y="13" text-anchor="middle" font-size="6" fill="#C9972C">✦</text><text x="46" y="11" text-anchor="middle" font-size="6" fill="white" font-family="sans-serif" font-weight="bold">Name</text><rect x="21" y="15" width="16" height="3" rx="1.5" fill="#C9972C" opacity=".3"/><rect x="40" y="15" width="12" height="3" rx="1.5" fill="#C9972C" opacity=".3"/><rect x="4" y="25" width="33" height="1" fill="#2A3050"/><rect x="4" y="29" width="33" height="1" fill="#2A3050"/><rect x="4" y="33" width="33" height="1" fill="#2A3050"/><rect x="43" y="25" width="33" height="1" fill="#2A3050"/><rect x="43" y="29" width="33" height="1" fill="#2A3050"/><rect x="43" y="33" width="33" height="1" fill="#2A3050"/><rect x="0" y="44" width="80" height="10" fill="#1A1F2E"/><rect x="20" y="47" width="40" height="1.5" fill="#C9972C" opacity=".4"/></svg></div>
+      <div class="tname">Modern Slate</div>
+    </div>
+    <div class="tpl-card" data-tpl="mandala">
+      <div class="thumb"><svg viewBox="0 0 80 54"><rect width="80" height="54" fill="#FFFAEE"/><rect x="1" y="1" width="78" height="52" fill="none" stroke="#D4A843" stroke-width=".8"/><circle cx="40" cy="20" r="13" fill="none" stroke="#D4A843" stroke-width=".8" stroke-dasharray="2,1"/><circle cx="40" cy="20" r="10" fill="#F5E8C0"/><circle cx="40" cy="20" r="7" fill="#E8D090"/><text x="40" y="38" text-anchor="middle" font-size="6" fill="#5C3A00" font-family="serif" font-weight="bold">Name</text><text x="40" y="32" text-anchor="middle" font-size="3.5" fill="#D4A843">◆ ◆ ◆</text><rect x="8" y="42" width="26" height="1" fill="#E8D090"/><rect x="8" y="45" width="20" height="1" fill="#E8D090"/><rect x="46" y="42" width="26" height="1" fill="#E8D090"/><rect x="46" y="45" width="20" height="1" fill="#E8D090"/></svg></div>
+      <div class="tname">Mandala</div>
+    </div>
+  </div>
+</div>
+
+<div class="layout">
+  <div class="form-panel">
+
+    <fieldset>
+      <legend><span class="n">1</span>Personal Details</legend>
+      <div class="field"><label>Full Name</label><input id="f_name" placeholder="e.g. Aarav Sharma"></div>
+      <div class="row2">
+        <div class="field"><label>Date of Birth</label><input id="f_dob" type="date"></div>
+        <div class="field"><label>Time of Birth</label><input id="f_tob" type="time"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Place of Birth</label><input id="f_pob" placeholder="City, State"></div>
+        <div class="field"><label>Height</label><input id="f_height" placeholder='e.g. 5&apos;9"'></div>
+      </div>
+      <div class="row3">
+        <div class="field"><label>Religion</label><input id="f_religion" placeholder="e.g. Hindu"></div>
+        <div class="field"><label>Caste</label><input id="f_caste" placeholder="e.g. Brahmin"></div>
+        <div class="field"><label>Sub-Caste</label><input id="f_subcaste" placeholder="Optional"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Gotra</label><input id="f_gotra" placeholder="e.g. Kashyap"></div>
+        <div class="field"><label>Manglik Status</label>
+          <select id="f_manglik"><option value="">Select</option><option>Manglik</option><option>Non-Manglik</option><option>Anshik Manglik</option></select>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Rashi (Moon Sign)</label><input id="f_rashi" placeholder="e.g. Simha"></div>
+        <div class="field"><label>Nakshatra</label><input id="f_nakshatra" placeholder="e.g. Purva Phalguni"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Complexion</label><input id="f_complexion" placeholder="e.g. Fair"></div>
+        <div class="field"><label>Blood Group</label><input id="f_blood" placeholder="e.g. B+"></div>
+      </div>
+      <div class="field"><label>Education</label><input id="f_edu" placeholder="e.g. B.Tech, MBA"></div>
+      <div class="row2">
+        <div class="field"><label>Occupation</label><input id="f_occ" placeholder="e.g. Software Engineer"></div>
+        <div class="field"><label>Annual Income</label><input id="f_income" placeholder="Optional"></div>
+      </div>
+      <div class="field"><label>Hobbies &amp; Interests</label><input id="f_hobbies" placeholder="e.g. Reading, Travelling, Music"></div>
+    </fieldset>
+
+    <fieldset>
+      <legend><span class="n">2</span>Family Background</legend>
+      <div class="field"><label>Family Type</label>
+        <div class="radio-group">
+          <label><input type="radio" name="famtype" value="Joint Family" checked> Joint Family</label>
+          <label><input type="radio" name="famtype" value="Nuclear Family"> Nuclear Family</label>
+        </div>
+      </div>
+      <div class="field"><label>Father's Name</label><input id="f_father" placeholder="Full name"></div>
+      <div class="field"><label>Father's Occupation</label><input id="f_father_occ" placeholder="Occupation"></div>
+      <div class="field"><label>Mother's Name</label><input id="f_mother" placeholder="Full name"></div>
+      <div class="field"><label>Mother's Occupation</label><input id="f_mother_occ" placeholder="Occupation"></div>
+      <div class="field"><label>Family Values</label><input id="f_values" placeholder="e.g. Traditional yet Modern"></div>
+      <div class="field"><label>Native Place</label><input id="f_native" placeholder="City, State"></div>
+    </fieldset>
+
+    <fieldset>
+      <legend><span class="n">3</span>Siblings</legend>
+      <div id="siblingList"></div>
+      <button type="button" class="add-row-btn" id="addSibling">+ Add Sibling</button>
+    </fieldset>
+
+    <fieldset>
+      <legend><span class="n">4</span>Uncles &amp; Aunts</legend>
+      <div id="relativeList"></div>
+      <button type="button" class="add-row-btn" id="addRelative">+ Add Uncle / Aunt</button>
+      <p class="hint">Add blood relative and their spouse together (e.g. Chacha + Chachi).</p>
+    </fieldset>
+
+    <fieldset>
+      <legend><span class="n">5</span>About Me</legend>
+      <div class="field">
+        <label>Personal Bio (shown as a note on the biodata)</label>
+        <textarea id="f_aboutme" rows="4" maxlength="400" placeholder="Write about your personality, values, what you enjoy..."></textarea>
+        <div class="char-count"><span id="cnt_about">0</span> / 400</div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend><span class="n">6</span>Partner Preferences</legend>
+      <div class="field">
+        <label>What I'm Looking For</label>
+        <textarea id="f_prefs" rows="3" maxlength="300" placeholder="e.g. Looking for a kind-hearted, educated partner..."></textarea>
+        <div class="char-count"><span id="cnt_prefs">0</span> / 300</div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend><span class="n">7</span>Photos</legend>
+      <div class="field"><label>Ganesh Ji Photo (top of card)</label></div>
+      <div class="photo-upload"><label class="photo-slot" id="ganeshaSlot">Add<input type="file" id="ganeshaInput" accept="image/*"></label></div>
+      <div class="field" style="margin-top:12px;"><label>Main Photo</label></div>
+      <div class="photo-upload"><label class="photo-slot" id="mainSlot">Add<input type="file" id="mainInput" accept="image/*"></label></div>
+      <div class="field" style="margin-top:12px;"><label>Additional Photos (up to 4 — click card photo to view gallery)</label></div>
+      <div class="photo-upload" id="extraSlots"></div>
+    </fieldset>
+
+    <fieldset>
+      <legend><span class="n">8</span>Contact Details</legend>
+      <div class="row2">
+        <div class="field"><label>Phone</label><input id="f_phone" placeholder="+91 XXXXX XXXXX"></div>
+        <div class="field"><label>WhatsApp</label><input id="f_whatsapp" placeholder="+91 XXXXX XXXXX"></div>
+      </div>
+      <div class="field"><label>Email</label><input id="f_email" placeholder="name@email.com"></div>
+      <div class="field"><label>Address</label><textarea id="f_address" rows="2" placeholder="City, State"></textarea></div>
+    </fieldset>
+
+  </div>
+
+  <div class="preview-wrap">
+    <div class="card-outer">
+      <div id="biodataCard"></div>
+    </div>
+    <p class="hint" style="max-width:794px;text-align:center;">
+      Fill the form — the biodata updates live. Switch templates above for a completely different layout. Click the photo on the card to see the gallery. Your data is auto-saved in this browser.
+    </p>
+  </div>
+</div>
+
+<div class="modal-overlay" id="galleryModal">
+  <div class="modal-box">
+    <h3>Photo Gallery</h3>
+    <p class="msub" id="galSub">Additional photos</p>
+    <div class="gal-grid" id="galGrid"></div>
+    <button class="modal-close" id="closeGal">Close</button>
+  </div>
+</div>
+
+<div id="toastWrap"></div>
+<footer class="pagefoot" style="text-align:center;padding:28px 20px 50px;color:var(--sub);font-size:.78rem;">
+  Made with care for a shubh vivah ❤️ &nbsp;·&nbsp; Your details stay in your browser — nothing is uploaded.
+</footer>
+
+<script>
+/* ===================== STATE ===================== */
+let curTpl = 'classic';
+let curTheme = 'kanku';
+let mainPhoto = null;
+let ganeshaUrl = null;
+const extras = [null,null,null,null];
+
+/* ===================== TOAST ===================== */
+function toast(msg, ms=3000){
+  const w = document.getElementById('toastWrap');
+  const t = document.createElement('div'); t.className='toast'; t.textContent=msg;
+  w.appendChild(t);
+  setTimeout(()=>{t.classList.add('out'); setTimeout(()=>t.remove(),300);},ms);
+}
+
+/* ===================== THEME ===================== */
+document.querySelectorAll('.swatch').forEach(sw=>{
+  sw.addEventListener('click',()=>{
+    curTheme=sw.dataset.t;
+    document.body.dataset.theme=curTheme;
+    document.querySelectorAll('.swatch').forEach(s=>s.classList.remove('active'));
+    sw.classList.add('active');
+    save(); renderCard();
+  });
+});
+
+/* ===================== TEMPLATE SWITCH ===================== */
+document.querySelectorAll('.tpl-card').forEach(c=>{
+  c.addEventListener('click',()=>{
+    curTpl=c.dataset.tpl;
+    document.querySelectorAll('.tpl-card').forEach(x=>x.classList.remove('active'));
+    c.classList.add('active');
+    const card=document.getElementById('biodataCard');
+    card.classList.add('switching');
+    setTimeout(()=>{renderCard();card.classList.remove('switching');},230);
+    save();
+  });
+});
+
+/* ===================== DATA ===================== */
+const fv=id=>(document.getElementById(id)||{}).value||'';
+function getData(){
+  const dob=fv('f_dob');
+  let age='';
+  if(dob){const bd=new Date(dob+'T00:00:00'),now=new Date();let y=now.getFullYear()-bd.getFullYear();if(now.getMonth()-bd.getMonth()<0||(now.getMonth()-bd.getMonth()===0&&now.getDate()<bd.getDate()))y--;if(!isNaN(y)&&y>=0&&y<120)age=y+' yrs';}
+  const famtype=(document.querySelector('input[name="famtype"]:checked')||{}).value||'Joint Family';
+  const siblings=[...document.querySelectorAll('#siblingList .repeat-row')].map(r=>({name:r.querySelector('.s-name').value.trim(),rel:r.querySelector('.s-rel').value,occ:r.querySelector('.s-occ').value.trim()})).filter(s=>s.name||s.occ);
+  const relatives=[...document.querySelectorAll('#relativeList .repeat-row')].map(r=>{const[bT,sT]=r.querySelector('.r-rel').value.split('|');return{bT,sT,name:r.querySelector('.r-name').value.trim(),occ:r.querySelector('.r-occ').value.trim(),sn:r.querySelector('.r-spouse').value.trim(),so:r.querySelector('.r-spouse-occ').value.trim()};}).filter(r=>r.name||r.sn);
+  return{name:fv('f_name'),dob,tob:fv('f_tob'),pob:fv('f_pob'),height:fv('f_height'),religion:fv('f_religion'),caste:fv('f_caste'),subcaste:fv('f_subcaste'),gotra:fv('f_gotra'),manglik:fv('f_manglik'),rashi:fv('f_rashi'),nakshatra:fv('f_nakshatra'),complexion:fv('f_complexion'),blood:fv('f_blood'),edu:fv('f_edu'),occ:fv('f_occ'),income:fv('f_income'),hobbies:fv('f_hobbies'),famtype,father:fv('f_father'),fatherOcc:fv('f_father_occ'),mother:fv('f_mother'),motherOcc:fv('f_mother_occ'),values:fv('f_values'),native:fv('f_native'),aboutMe:fv('f_aboutme'),prefs:fv('f_prefs'),phone:fv('f_phone'),whatsapp:fv('f_whatsapp'),email:fv('f_email'),address:fv('f_address'),age,siblings,relatives,mainPhoto,ganeshaUrl,extras};
+}
+
+/* ===================== HELPERS ===================== */
+function fmtDate(v){if(!v)return'';const d=new Date(v+'T00:00:00');return isNaN(d)?v:d.toLocaleDateString('en-IN',{day:'2-digit',month:'long',year:'numeric'});}
+function fmtTime(v){if(!v)return'';const[h,m]=v.split(':');const hh=parseInt(h);return`${((hh+11)%12)+1}:${m} ${hh>=12?'PM':'AM'}`;}
+function tRows(pairs){return pairs.filter(([,v])=>v).map(([k,v])=>`<tr><td class="k">${k}</td><td class="v">${v}</td></tr>`).join('');}
+function sRows(pairs){return pairs.filter(([,v])=>v).map(([k,v])=>`<div class="srow"><span class="sk">${k}</span><span class="sv">${v}</span></div>`).join('');}
+function sibHtml(s){return s.map(x=>`<div>${x.name||'—'} <span class="mrole">(${x.rel}${x.occ?' · '+x.occ:''})</span></div>`).join('');}
+function relHtml(r){return r.map(x=>{let l='';if(x.name||x.occ)l+=`<div>${x.name||x.bT} <span class="mrole">(${x.bT}${x.occ?' · '+x.occ:''})</span></div>`;if(x.sn||x.so)l+=`<div>${x.sn||x.sT} <span class="mrole">(${x.sT}${x.so?' · '+x.so:''})</span></div>`;return`<div class="rgrp">${l}</div>`;}).join('');}
+function gSvg(c1,c2,bg){return`<svg viewBox="0 0 100 100" width="100%" height="100%"><circle cx="50" cy="50" r="49" fill="none" stroke="${c2}" stroke-width="1.4"/><ellipse cx="50" cy="46" rx="19" ry="17" fill="${c1}"/><path d="M31 44 C 20 46,16 56,22 64 C 26 68,32 66,33 60" fill="${c1}"/><ellipse cx="26" cy="34" rx="10" ry="12" fill="${c1}"/><ellipse cx="74" cy="34" rx="10" ry="12" fill="${c1}"/><ellipse cx="26" cy="34" rx="5.5" ry="7" fill="${bg}"/><ellipse cx="74" cy="34" rx="5.5" ry="7" fill="${bg}"/><circle cx="43" cy="45" r="2.4" fill="${bg}"/><circle cx="57" cy="45" r="2.4" fill="${bg}"/><path d="M38 54 Q50 60 62 54" stroke="${bg}" stroke-width="1.6" fill="none"/><path d="M36 62 Q50 78 64 62 Q64 74 50 80 Q36 74 36 62 Z" fill="${c2}"/><circle cx="50" cy="20" r="4.5" fill="${c2}"/></svg>`;}
+const cpath=`<path d="M2 2 C 20 2,30 4,34 16 C 24 12,12 20,8 34 C 4 20,2 12,2 2 Z" fill="var(--accent)" opacity=".55"/>`;
+
+/* ===================== TEMPLATE 1: CLASSIC ===================== */
+function tplClassic(d){
+  const ec=d.extras.filter(Boolean).length;
+  const g=d.ganeshaUrl?`<img src="${d.ganeshaUrl}" alt="Ganesh Ji">`:gSvg('var(--primary)','var(--accent)','var(--card-bg)');
+  const ph=d.mainPhoto?`<img src="${d.mainPhoto}" alt="Photo">${ec?`<span class="pbadge">+${ec}</span>`:''}`:
+    `<svg viewBox="0 0 100 100" width="100%" height="100%"><rect width="100" height="100" fill="#f0eade"/><circle cx="50" cy="38" r="18" fill="#c8b98a"/><ellipse cx="50" cy="80" rx="28" ry="18" fill="#c8b98a"/></svg>`;
+  const casteLine=[d.religion,d.caste,d.subcaste].filter(Boolean).join(' · ');
+  const pr=tRows([['Date of Birth',fmtDate(d.dob)+(d.age?` (Age: ${d.age})`:'')] ,['Time of Birth',fmtTime(d.tob)],['Place of Birth',d.pob],['Height',d.height],['Religion / Caste',casteLine],['Gotra',d.gotra],['Manglik Status',d.manglik],['Rashi',d.rashi],['Nakshatra',d.nakshatra],['Complexion',d.complexion],['Blood Group',d.blood],['Education',d.edu],['Occupation',d.occ],['Annual Income',d.income],['Hobbies',d.hobbies]]);
+  const fr=tRows([['Family Type',d.famtype],['Father',d.father+(d.fatherOcc?` (${d.fatherOcc})`:'')] ,['Mother',d.mother+(d.motherOcc?` (${d.motherOcc})`:'')] ,['Family Values',d.values],['Native Place',d.native]]);
+  const sibs=sibHtml(d.siblings); const rels=relHtml(d.relatives);
+  const ct=[d.phone,d.whatsapp?`WhatsApp: ${d.whatsapp}`:'',d.email].filter(Boolean).join('   ·   ');
+  return`<div class="tpl-classic">
+    <svg class="corn tl" viewBox="0 0 64 64">${cpath}</svg><svg class="corn tr" viewBox="0 0 64 64">${cpath}</svg>
+    <svg class="corn bl" viewBox="0 0 64 64">${cpath}</svg><svg class="corn br" viewBox="0 0 64 64">${cpath}</svg>
+    <div class="chead"><div class="gbox">${g}</div><div class="om">|| श्री गणेशाय नमः ||</div>
+      <h1>${d.name||'Full Name'}</h1><div class="sub">Biodata for Marriage</div>
+      ${d.age?`<span class="abadge">Age ${d.age}</span>`:''}
+    </div>
+    <div class="grule"></div>
+    <div class="pblock"><div class="pclick" id="cardPhoto">${ph}</div></div>
+    ${pr?`<div class="stitle">Personal Details</div><table class="dt">${pr}</table>`:''}
+    ${fr?`<div class="stitle">Family Background</div><table class="dt">${fr}</table>`:''}
+    ${sibs?`<div class="stitle">Siblings</div><div class="mlist">${sibs}</div>`:''}
+    ${rels?`<div class="stitle">Uncles &amp; Aunts</div><div class="mlist">${rels}</div>`:''}
+    ${d.aboutMe?`<div class="stitle">About Me</div><div class="about-blk">${d.aboutMe}</div>`:''}
+    ${d.prefs?`<div class="stitle">Partner Preferences</div><p style="font-size:.87rem;line-height:1.7;">${d.prefs}</p>`:''}
+    <div class="cfoot">${ct?`<div class="ct">${ct}</div>`:''}${d.address?`<div>${d.address}</div>`:''}</div>
+  </div>`;
+}
+
+/* ===================== TEMPLATE 2: ROYAL ARCH ===================== */
+function tplArch(d){
+  const ec=d.extras.filter(Boolean).length;
+  const g=d.ganeshaUrl?`<img src="${d.ganeshaUrl}" alt="Ganesh Ji">`:gSvg('#fff','var(--accent)','var(--primary)');
+  const ph=d.mainPhoto?`<img src="${d.mainPhoto}" alt="Photo">${ec?`<span class="pbadge">+${ec}</span>`:''}`:
+    `<span class="pmt">Photo</span>`;
+  const casteLine=[d.religion,d.caste,d.subcaste].filter(Boolean).join(' · ');
+  const pr=tRows([['Date of Birth',fmtDate(d.dob)+(d.age?` (${d.age})`:'')] ,['Time of Birth',fmtTime(d.tob)],['Place of Birth',d.pob],['Height',d.height],['Religion / Caste',casteLine],['Gotra',d.gotra],['Manglik',d.manglik],['Rashi',d.rashi],['Nakshatra',d.nakshatra],['Complexion',d.complexion],['Blood Group',d.blood]]);
+  const pr2=tRows([['Education',d.edu],['Occupation',d.occ],['Annual Income',d.income],['Hobbies',d.hobbies]]);
+  const fr=tRows([['Family Type',d.famtype],['Father',d.father+(d.fatherOcc?` (${d.fatherOcc})`:'')] ,['Mother',d.mother+(d.motherOcc?` (${d.motherOcc})`:'')] ,['Family Values',d.values],['Native Place',d.native]]);
+  const sibs=sibHtml(d.siblings); const rels=relHtml(d.relatives);
+  const ctItems=[d.phone,d.whatsapp?`WhatsApp: ${d.whatsapp}`:'',d.email].filter(Boolean);
+  return`<div class="tpl-arch">
+    <div class="ahdr">
+      <div class="gbox">${g}</div>
+      <div class="om">|| श्री गणेशाय नमः ||</div>
+      <h1>${d.name||'Full Name'}</h1>
+      <div class="sub">Biodata for Marriage</div>
+      ${d.age?`<span class="achip">Age ${d.age}</span>`:''}
+      <svg class="wave" viewBox="0 0 794 36" preserveAspectRatio="none"><path d="M0 0 Q397 36 794 0 L794 36 L0 36 Z" fill="var(--card-bg)"/></svg>
+    </div>
+    <div class="abody">
+      <div class="aleft">
+        <div class="aphoto" id="cardPhoto">${ph}</div>
+        ${ctItems.length?`<div class="actxt">${ctItems.map(c=>`<div class="ci"><span class="ico">◆</span>${c}</div>`).join('')}</div>`:''}
+        ${d.address?`<div class="actxt" style="font-size:.75rem;text-align:center;">${d.address}</div>`:''}
+      </div>
+      <div class="aright">
+        ${pr?`<div class="asect">Personal Details</div><table class="dt">${pr}</table>`:''}
+        ${pr2?`<table class="dt" style="margin-top:5px;">${pr2}</table>`:''}
+        ${fr?`<div class="asect">Family Background</div><table class="dt">${fr}</table>`:''}
+        ${d.aboutMe?`<div class="asect">About Me</div><div class="about-blk">${d.aboutMe}</div>`:''}
+        ${d.prefs?`<div class="asect">Partner Preferences</div><p style="font-size:.83rem;line-height:1.7;">${d.prefs}</p>`:''}
+      </div>
+    </div>
+    ${sibs||rels?`<div class="afull"><div style="display:grid;grid-template-columns:1fr 1fr;gap:22px;">${sibs?`<div><div class="asect" style="margin-top:0;">Siblings</div><div class="mlist">${sibs}</div></div>`:''}${rels?`<div><div class="asect" style="margin-top:0;">Uncles &amp; Aunts</div><div class="mlist">${rels}</div></div>`:''}</div></div>`:''}
+    <div class="afoot">Shubh Vivah Biodata Maker</div>
+  </div>`;
+}
+
+/* ===================== TEMPLATE 3: LOTUS ===================== */
+function tplLotus(d){
+  const ec=d.extras.filter(Boolean).length;
+  const g=d.ganeshaUrl?`<img src="${d.ganeshaUrl}" alt="Ganesh Ji">`:gSvg('#C05070','#E8B4C0','#FFF9F9');
+  const ph=d.mainPhoto?`<img src="${d.mainPhoto}" alt="Photo">${ec?`<span class="pbadge">+${ec}</span>`:''}`:
+    `<span class="pmt" style="font-size:.64rem;color:#B87090;">Photo</span>`;
+  const casteLine=[d.religion,d.caste,d.subcaste].filter(Boolean).join(' · ');
+  const lr=tRows([['Date of Birth',fmtDate(d.dob)],['Age',d.age],['Time of Birth',fmtTime(d.tob)],['Place of Birth',d.pob],['Height',d.height],['Religion',d.religion],['Caste',[d.caste,d.subcaste].filter(Boolean).join(' · ')],['Gotra',d.gotra],['Manglik',d.manglik],['Rashi',d.rashi],['Nakshatra',d.nakshatra],['Complexion',d.complexion],['Blood Group',d.blood]]);
+  const rr=tRows([['Education',d.edu],['Occupation',d.occ],['Annual Income',d.income],['Hobbies',d.hobbies],['Family Type',d.famtype],['Father',d.father+(d.fatherOcc?` (${d.fatherOcc})`:'')] ,['Mother',d.mother+(d.motherOcc?` (${d.motherOcc})`:'')] ,['Family Values',d.values],['Native Place',d.native]]);
+  const sibs=sibHtml(d.siblings); const rels=relHtml(d.relatives);
+  const ct=[d.phone,d.whatsapp?`WhatsApp: ${d.whatsapp}`:'',d.email].filter(Boolean).join('   ·   ');
+  return`<div class="tpl-lotus"><div class="linner">
+    <div class="lhead">
+      <div class="gbox">${g}</div>
+      <div class="om">|| श्री गणेशाय नमः ||</div>
+      <h1>${d.name||'Full Name'}</h1><div class="sub">Biodata for Marriage</div>
+      ${d.age?`<span class="abadge">Age ${d.age}</span>`:''}
+    </div>
+    <div class="ldiv"></div>
+    <div class="lphoto"><div class="lpwrap" id="cardPhoto">${ph}</div></div>
+    <div class="lcols">
+      <div>${lr?`<div class="lstitle">Personal Details</div><table class="dt">${lr}</table>`:''}</div>
+      <div>${rr?`<div class="lstitle">Education &amp; Family</div><table class="dt">${rr}</table>`:''}</div>
+    </div>
+    ${sibs||rels?`<div style="display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:14px;">${sibs?`<div><div class="lstitle">Siblings</div><div class="mlist">${sibs}</div></div>`:''}${rels?`<div><div class="lstitle">Uncles &amp; Aunts</div><div class="mlist">${rels}</div></div>`:''}</div>`:''}
+    ${d.aboutMe?`<div class="lstitle" style="margin-top:16px;">About Me</div><div class="about-blk">${d.aboutMe}</div>`:''}
+    ${d.prefs?`<div class="lstitle" style="margin-top:12px;">Partner Preferences</div><p style="font-size:.87rem;line-height:1.7;color:#3A1525;">${d.prefs}</p>`:''}
+    <div class="lfoot">${ct?`<div class="ct">${ct}</div>`:''}${d.address?`<div>${d.address}</div>`:''}</div>
+  </div></div>`;
+}
+
+/* ===================== TEMPLATE 4: PARCHMENT ===================== */
+function tplParchment(d){
+  const ec=d.extras.filter(Boolean).length;
+  const g=d.ganeshaUrl?`<img src="${d.ganeshaUrl}" alt="Ganesh Ji">`:gSvg('#fff','rgba(255,215,100,.85)','rgba(255,255,255,.1)');
+  const ph=d.mainPhoto?`<img src="${d.mainPhoto}" alt="Photo">${ec?`<span class="pbadge">+${ec}</span>`:''}`:
+    `<span class="pmt">Photo</span>`;
+  const casteLine=[d.religion,d.caste,d.subcaste].filter(Boolean).join(' · ');
+  const pr=tRows([['Date of Birth',fmtDate(d.dob)+(d.age?` (Age: ${d.age})`:'')] ,['Time of Birth',fmtTime(d.tob)],['Place of Birth',d.pob],['Height',d.height],['Religion / Caste',casteLine],['Gotra',d.gotra],['Manglik Status',d.manglik],['Rashi',d.rashi],['Nakshatra',d.nakshatra],['Complexion',d.complexion],['Blood Group',d.blood],['Education',d.edu],['Occupation',d.occ],['Annual Income',d.income],['Hobbies',d.hobbies]]);
+  const fr=tRows([['Family Type',d.famtype],['Father',d.father+(d.fatherOcc?` (${d.fatherOcc})`:'')] ,['Mother',d.mother+(d.motherOcc?` (${d.motherOcc})`:'')] ,['Family Values',d.values],['Native Place',d.native]]);
+  const sibs=sibHtml(d.siblings); const rels=relHtml(d.relatives);
+  const ct=[d.phone,d.whatsapp?`WhatsApp: ${d.whatsapp}`:'',d.email].filter(Boolean).join('   ·   ');
+  return`<div class="tpl-parchment">
+    <div class="pbanner">
+      <div class="pgbox">${g}</div>
+      <div class="ptitle"><div class="om">|| श्री गणेशाय नमः ||</div><h1>${d.name||'Full Name'}</h1><div class="sub">Biodata for Marriage</div></div>
+      <div class="pphoto-wrap"><div class="pphoto" id="cardPhoto">${ph}</div></div>
+    </div>
+    <div class="pbody">
+      ${d.age?`<span class="page">Age: ${d.age}</span>`:''}
+      ${pr?`<div class="psect">Personal Details</div><table class="dt">${pr}</table>`:''}
+      ${fr?`<div class="psect">Family Background</div><table class="dt">${fr}</table>`:''}
+      ${sibs||rels?`<div style="display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:10px;">${sibs?`<div><div class="psect" style="margin-top:0;">Siblings</div><div class="mlist">${sibs}</div></div>`:''}${rels?`<div><div class="psect" style="margin-top:0;">Uncles &amp; Aunts</div><div class="mlist">${rels}</div></div>`:''}</div>`:''}
+      ${d.aboutMe?`<div class="psect">About Me</div><div class="about-blk">${d.aboutMe}</div>`:''}
+      ${d.prefs?`<div class="psect">Partner Preferences</div><p style="font-size:.87rem;line-height:1.7;color:#3D2010;">${d.prefs}</p>`:''}
+    </div>
+    <div class="pfoot">${ct?`<div class="ct">${ct}</div>`:''}${d.address?`<div>${d.address}</div>`:''}</div>
+  </div>`;
+}
+
+/* ===================== TEMPLATE 5: MODERN SLATE ===================== */
+function tplSlate(d){
+  const ec=d.extras.filter(Boolean).length;
+  const g=d.ganeshaUrl?`<img src="${d.ganeshaUrl}" alt="Ganesh Ji">`:gSvg('#C9972C','#D4A843','#1A1F2E');
+  const ph=d.mainPhoto?`<img src="${d.mainPhoto}" alt="Photo">${ec?`<span class="pbadge">+${ec}</span>`:''}`:
+    `<span class="pmt">Photo</span>`;
+  const chips=[d.age?`Age ${d.age}`:'',d.height,d.blood,[d.religion,d.caste].filter(Boolean).join('/')].filter(Boolean);
+  const casteLine=[d.religion,d.caste,d.subcaste].filter(Boolean).join(' · ');
+  const lr=sRows([['Date of Birth',fmtDate(d.dob)],['Time of Birth',fmtTime(d.tob)],['Place of Birth',d.pob],['Religion / Caste',casteLine],['Gotra',d.gotra],['Manglik',d.manglik],['Rashi / Nakshatra',[d.rashi,d.nakshatra].filter(Boolean).join(' / ')],['Complexion',d.complexion],['Education',d.edu],['Occupation',d.occ],['Annual Income',d.income],['Hobbies',d.hobbies]]);
+  const rr=sRows([['Family Type',d.famtype],['Father',d.father+(d.fatherOcc?` (${d.fatherOcc})`:'')] ,['Mother',d.mother+(d.motherOcc?` (${d.motherOcc})`:'')] ,['Family Values',d.values],['Native Place',d.native]]);
+  const sibs=sibHtml(d.siblings); const rels=relHtml(d.relatives);
+  const ctItems=[d.phone?`📞 ${d.phone}`:'',d.whatsapp?`💬 ${d.whatsapp}`:'',d.email?`✉ ${d.email}`:'',d.address].filter(Boolean);
+  return`<div class="tpl-slate">
+    <div class="shdr">
+      <div class="sphoto" id="cardPhoto">${ph}</div>
+      <div class="sinfo">
+        <div class="som">|| श्री गणेशाय नमः ||</div>
+        <h1>${d.name||'Full Name'}</h1>
+        <div class="sub">Biodata for Marriage</div>
+        ${chips.length?`<div class="schips">${chips.map(c=>`<span class="schip">${c}</span>`).join('')}</div>`:''}
+      </div>
+      <div class="sgbox">${g}</div>
+    </div>
+    <div class="sbody">
+      <div class="sgrid">
+        <div>${lr?`<div class="ssect">Personal Details</div>${lr}`:''}</div>
+        <div>
+          ${rr?`<div class="ssect">Family Background</div>${rr}`:''}
+          ${sibs?`<div class="ssect" style="margin-top:18px;">Siblings</div><div class="mlist">${sibs}</div>`:''}
+          ${rels?`<div class="ssect" style="margin-top:18px;">Uncles &amp; Aunts</div><div class="mlist">${rels}</div>`:''}
+        </div>
+      </div>
+      ${d.aboutMe?`<div class="ssect" style="margin-top:22px;">About Me</div><div class="about-blk">${d.aboutMe}</div>`:''}
+      ${d.prefs?`<div class="ssect" style="margin-top:16px;">Partner Preferences</div><p style="font-size:.87rem;line-height:1.7;color:#C8C4BC;">${d.prefs}</p>`:''}
+    </div>
+    <div class="sfoot">${ctItems.map(c=>`<span class="ct">${c}</span>`).join('')}</div>
+  </div>`;
+}
+
+/* ===================== TEMPLATE 6: GOLDEN MANDALA ===================== */
+function tplMandala(d){
+  const ec=d.extras.filter(Boolean).length;
+  const ph=d.mainPhoto?`<img src="${d.mainPhoto}" alt="Photo">`:
+    `<span class="pmt">Photo</span>`;
+  const badge=ec?`<span class="pbadge">+${ec}</span>`:'';
+  const spokes=Array.from({length:16},(_,i)=>{const a=(i*22.5)*Math.PI/180,x1=(85+67*Math.cos(a)).toFixed(1),y1=(85+67*Math.sin(a)).toFixed(1),x2=(85+75*Math.cos(a)).toFixed(1),y2=(85+75*Math.sin(a)).toFixed(1);return`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#D4A843" stroke-width="1.5"/>`;}).join('');
+  const dots=Array.from({length:8},(_,i)=>{const a=(i*45)*Math.PI/180,x=(85+71*Math.cos(a)).toFixed(1),y=(85+71*Math.sin(a)).toFixed(1);return`<circle cx="${x}" cy="${y}" r="2.8" fill="#D4A843"/>`;}).join('');
+  const msvg=`<svg class="rsvg" viewBox="0 0 170 170"><circle cx="85" cy="85" r="82" fill="none" stroke="#D4A843" stroke-width="1.5" stroke-dasharray="4,3"/><circle cx="85" cy="85" r="75" fill="none" stroke="#F0C860" stroke-width=".7"/><circle cx="85" cy="85" r="67" fill="none" stroke="#D4A843" stroke-width="2"/>${spokes}${dots}<circle cx="85" cy="85" r="62" fill="#F5E8C0"/></svg>`;
+  const casteLine=[d.religion,d.caste,d.subcaste].filter(Boolean).join(' · ');
+  const lr=tRows([['Date of Birth',fmtDate(d.dob)+(d.age?` (${d.age})`:'')] ,['Time of Birth',fmtTime(d.tob)],['Place of Birth',d.pob],['Height',d.height],['Religion / Caste',casteLine],['Gotra',d.gotra],['Manglik',d.manglik],['Rashi',d.rashi],['Nakshatra',d.nakshatra],['Complexion',d.complexion],['Blood Group',d.blood]]);
+  const rr=tRows([['Education',d.edu],['Occupation',d.occ],['Annual Income',d.income],['Hobbies',d.hobbies],['Family Type',d.famtype],['Father',d.father+(d.fatherOcc?` (${d.fatherOcc})`:'')] ,['Mother',d.mother+(d.motherOcc?` (${d.motherOcc})`:'')] ,['Family Values',d.values],['Native Place',d.native]]);
+  const sibs=sibHtml(d.siblings); const rels=relHtml(d.relatives);
+  const ct=[d.phone,d.whatsapp?`WhatsApp: ${d.whatsapp}`:'',d.email].filter(Boolean).join('   ◆   ');
+  return`<div class="tpl-mandala"><div class="mouter">
+    <div class="mhead">
+      <div class="mring" id="cardPhoto">${msvg}<div class="rphoto">${ph}</div>${badge}</div>
+      <div class="mom">|| श्री गणेशाय नमः ||</div>
+      <h1>${d.name||'Full Name'}</h1><div class="sub">Biodata for Marriage</div>
+      ${d.age?`<span class="abadge">Age ${d.age}</span>`:''}
+    </div>
+    <div class="mrule"><span class="dia">◆</span></div>
+    <div class="mcols">
+      <div>${lr?`<div class="msect">Personal Details</div><table class="dt">${lr}</table>`:''}</div>
+      <div>${rr?`<div class="msect">Education &amp; Family</div><table class="dt">${rr}</table>`:''}</div>
+    </div>
+    ${sibs||rels?`<div><div class="mrule" style="margin:14px 0 10px;"><span class="dia">◆</span></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:26px;">${sibs?`<div><div class="msect">Siblings</div><div class="mlist">${sibs}</div></div>`:''}${rels?`<div><div class="msect">Uncles &amp; Aunts</div><div class="mlist">${rels}</div></div>`:''}</div></div>`:''}
+    ${d.aboutMe?`<div class="mrule" style="margin:14px 0 10px;"><span class="dia">◆</span></div><div class="msect">About Me</div><div class="about-blk">${d.aboutMe}</div>`:''}
+    ${d.prefs?`<div class="msect" style="margin-top:12px;">Partner Preferences</div><p style="font-size:.87rem;line-height:1.7;color:#3A2000;">${d.prefs}</p>`:''}
+    <div class="mfoot">${ct?`<div class="ct">${ct}</div>`:''}${d.address?`<div>${d.address}</div>`:''}</div>
+  </div></div>`;
+}
+
+/* ===================== RENDER ===================== */
+const TPLS={classic:tplClassic,arch:tplArch,lotus:tplLotus,parchment:tplParchment,slate:tplSlate,mandala:tplMandala};
+function renderCard(){
+  const d=getData();
+  document.getElementById('biodataCard').innerHTML=TPLS[curTpl](d);
+  const btn=document.getElementById('cardPhoto');
+  if(btn) btn.addEventListener('click',()=>openGallery(d));
+}
+
+function openGallery(d){
+  if(!d.mainPhoto) return;
+  const all=[d.mainPhoto,...d.extras.filter(Boolean)];
+  document.getElementById('galSub').textContent=`${all.length} photo${all.length>1?'s':''} of ${d.name||'the candidate'}`;
+  document.getElementById('galGrid').innerHTML=all.map(u=>`<div class="gi"><img src="${u}"></div>`).join('');
+  document.getElementById('galleryModal').classList.add('open');
+}
+
+/* ===================== FORM BINDING ===================== */
+function onInput(){renderCard();save();}
+document.querySelectorAll('.form-panel input,.form-panel select,.form-panel textarea')
+  .forEach(el=>el.addEventListener('input',onInput));
+document.getElementById('f_aboutme').addEventListener('input',e=>document.getElementById('cnt_about').textContent=e.target.value.length);
+document.getElementById('f_prefs').addEventListener('input',e=>document.getElementById('cnt_prefs').textContent=e.target.value.length);
+
+/* ===================== SIBLINGS ===================== */
+let sc=0;
+function addSiblingRow(data){
+  sc++;
+  const w=document.createElement('div'); w.className='repeat-row';
+  w.innerHTML=`<button type="button" class="remove" aria-label="Remove">✕</button>
+    <div class="field"><label>Name</label><input class="s-name" placeholder="Sibling's name" value="${data?.name||''}"></div>
+    <div class="row2">
+      <div class="field"><label>Relation</label><select class="s-rel">
+        <option${data?.rel==='Elder Brother'?' selected':''}>Elder Brother</option>
+        <option${data?.rel==='Younger Brother'?' selected':''}>Younger Brother</option>
+        <option${data?.rel==='Elder Sister'?' selected':''}>Elder Sister</option>
+        <option${data?.rel==='Younger Sister'?' selected':''}>Younger Sister</option>
+      </select></div>
+      <div class="field"><label>Occupation / Status</label><input class="s-occ" placeholder="e.g. Married, Doctor" value="${data?.occ||''}"></div>
+    </div>`;
+  w.querySelector('.remove').addEventListener('click',()=>{w.remove();onInput();});
+  w.querySelectorAll('input,select').forEach(el=>el.addEventListener('input',onInput));
+  document.getElementById('siblingList').appendChild(w);
+}
+document.getElementById('addSibling').addEventListener('click',()=>{addSiblingRow();renderCard();});
+
+/* ===================== RELATIVES ===================== */
+const RELS=[["Chacha (Father's Younger Brother)",'Chacha','Chachi'],["Tau (Father's Elder Brother)",'Tau','Tai'],["Bua (Father's Sister)",'Bua','Fufaji'],["Mama (Mother's Brother)",'Mama','Mami'],["Mausi (Mother's Sister)",'Mausi','Mausa']];
+let rc=0;
+function addRelativeRow(data){
+  rc++;
+  const w=document.createElement('div'); w.className='repeat-row';
+  const opts=RELS.map(([lbl,b,s])=>`<option value="${b}|${s}"${data?.rel===`${b}|${s}`?' selected':''}>${lbl}</option>`).join('');
+  w.innerHTML=`<button type="button" class="remove" aria-label="Remove">✕</button>
+    <div class="field"><label>Relation</label><select class="r-rel">${opts}</select></div>
+    <div class="row2">
+      <div class="field"><label class="rnl">Name</label><input class="r-name" placeholder="Name" value="${data?.name||''}"></div>
+      <div class="field"><label class="rol">Occupation</label><input class="r-occ" placeholder="Optional" value="${data?.occ||''}"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label class="rsl">Spouse Name</label><input class="r-spouse" placeholder="Optional" value="${data?.sn||''}"></div>
+      <div class="field"><label class="rsol">Spouse Occupation</label><input class="r-spouse-occ" placeholder="Optional" value="${data?.so||''}"></div>
+    </div>`;
+  const upd=()=>{const[bT,sT]=w.querySelector('.r-rel').value.split('|');w.querySelector('.rnl').textContent=`${bT}'s Name`;w.querySelector('.rol').textContent=`${bT}'s Occupation`;w.querySelector('.rsl').textContent=`${sT}'s Name`;w.querySelector('.rsol').textContent=`${sT}'s Occupation`;};
+  upd();
+  w.querySelector('.r-rel').addEventListener('change',()=>{upd();onInput();});
+  w.querySelector('.remove').addEventListener('click',()=>{w.remove();onInput();});
+  w.querySelectorAll('input,select').forEach(el=>el.addEventListener('input',onInput));
+  document.getElementById('relativeList').appendChild(w);
+}
+document.getElementById('addRelative').addEventListener('click',()=>{addRelativeRow();renderCard();});
+
+/* ===================== PHOTOS ===================== */
+function f2url(file,cb){const r=new FileReader();r.onload=e=>cb(e.target.result);r.readAsDataURL(file);}
+
+function bindGanesha(){
+  document.getElementById('ganeshaInput').addEventListener('change',e=>{
+    const f=e.target.files[0];if(!f)return;
+    f2url(f,url=>{ganeshaUrl=url;document.getElementById('ganeshaSlot').innerHTML=`<img src="${url}" alt="Ganesh Ji"><input type="file" id="ganeshaInput" accept="image/*">`;bindGanesha();renderCard();});
+  });
+}
+bindGanesha();
+
+function bindMain(){
+  document.getElementById('mainInput').addEventListener('change',e=>{
+    const f=e.target.files[0];if(!f)return;
+    f2url(f,url=>{mainPhoto=url;document.getElementById('mainSlot').innerHTML=`<img src="${url}" alt="Main photo"><input type="file" id="mainInput" accept="image/*">`;bindMain();renderCard();});
+  });
+}
+bindMain();
+
+const eSlots=document.getElementById('extraSlots');
+for(let i=0;i<4;i++){
+  const lbl=document.createElement('label');lbl.className='photo-slot';
+  lbl.innerHTML=`+<input type="file" accept="image/*">`;
+  eSlots.appendChild(lbl);
+  const bind=(label,idx)=>{label.querySelector('input').addEventListener('change',e2=>{
+    const f2=e2.target.files[0];if(!f2)return;
+    f2url(f2,u=>{extras[idx]=u;label.innerHTML=`<img src="${u}" alt="Extra ${idx+1}"><input type="file" accept="image/*">`;bind(label,idx);renderCard();});
+  });};
+  bind(lbl,i);
+}
+
+/* ===================== GALLERY MODAL ===================== */
+document.getElementById('closeGal').addEventListener('click',()=>document.getElementById('galleryModal').classList.remove('open'));
+document.getElementById('galleryModal').addEventListener('click',e=>{if(e.target.id==='galleryModal')e.currentTarget.classList.remove('open');});
+
+/* ===================== RESET ===================== */
+document.getElementById('resetBtn').addEventListener('click',()=>{
+  if(!confirm('Reset all form data? This cannot be undone.'))return;
+  document.querySelectorAll('.form-panel input:not([type=radio]):not([type=file]),.form-panel select,.form-panel textarea').forEach(el=>el.value='');
+  document.querySelector('input[name="famtype"][value="Joint Family"]').checked=true;
+  document.getElementById('siblingList').innerHTML='';
+  document.getElementById('relativeList').innerHTML='';
+  mainPhoto=null;ganeshaUrl=null;extras.fill(null);
+  document.getElementById('ganeshaSlot').innerHTML='Add<input type="file" id="ganeshaInput" accept="image/*">';
+  bindGanesha();
+  document.getElementById('mainSlot').innerHTML='Add<input type="file" id="mainInput" accept="image/*">';
+  bindMain();
+  [...document.querySelectorAll('#extraSlots .photo-slot')].forEach((s,i)=>{s.innerHTML=`+<input type="file" accept="image/*">`;const bind2=(l,idx)=>{l.querySelector('input').addEventListener('change',e2=>{const f=e2.target.files[0];if(!f)return;f2url(f,u=>{extras[idx]=u;l.innerHTML=`<img src="${u}"><input type="file" accept="image/*">`;bind2(l,idx);renderCard();});});};bind2(s,i);});
+  document.getElementById('cnt_about').textContent='0';
+  document.getElementById('cnt_prefs').textContent='0';
+  addSiblingRow();addRelativeRow();
+  localStorage.removeItem('sv_data');
+  renderCard();toast('✓ Form has been reset.');
+});
+
+/* ===================== PRINT ===================== */
+document.getElementById('printBtn').addEventListener('click',()=>window.print());
+
+/* ===================== PDF ===================== */
+document.getElementById('downloadBtn').addEventListener('click',async()=>{
+  const btn=document.getElementById('downloadBtn');
+  btn.textContent='Preparing…';btn.disabled=true;
+  try{await buildPdf();toast('✓ Biodata PDF downloaded!');}
+  catch(e){console.error(e);alert('Something went wrong. Please try again.');}
+  finally{btn.textContent='⬇ Download PDF';btn.disabled=false;}
+});
+async function loadSz(url){return new Promise(r=>{const i=new Image();i.onload=()=>r({w:i.naturalWidth,h:i.naturalHeight});i.onerror=()=>r({w:1,h:1});i.src=url;});}
+async function buildPdf(){
+  const{jsPDF}=window.jspdf;
+  const card=document.getElementById('biodataCard');
+  const photoEl=document.getElementById('cardPhoto');
+  const cr=card.getBoundingClientRect();
+  const p2m=210/cr.width;
+  const canvas=await html2canvas(card,{scale:3,backgroundColor:null,useCORS:true});
+  const imgData=canvas.toDataURL('image/jpeg',0.95);
+  const pdf=new jsPDF('p','mm','a4');
+  const pw=210,ph=297;
+  const ih=(canvas.height/canvas.width)*pw;
+  let hl=ih,pos=0,pc=0;
+  pdf.addImage(imgData,'JPEG',0,pos,pw,ih);hl-=ph;pc=1;
+  while(hl>0){pos=hl-ih;pdf.addPage();pdf.addImage(imgData,'JPEG',0,pos,pw,ih);hl-=ph;pc++;}
+  const hasEx=extras.some(Boolean)&&mainPhoto;
+  const gPage=pc+1;
+  if(hasEx&&photoEl){
+    const pr2=photoEl.getBoundingClientRect();
+    const lx=(pr2.left-cr.left)*p2m,ly=(pr2.top-cr.top)*p2m,lw=pr2.width*p2m,lh=pr2.height*p2m;
+    pdf.setPage(1);pdf.link(lx,ly,lw,lh,{pageNumber:gPage});
+    pdf.addPage();
+    pdf.setFont('helvetica','bold');pdf.setFontSize(18);pdf.setTextColor(60,30,20);
+    pdf.text('More Photos',pw/2,24,{align:'center'});
+    pdf.setFont('helvetica','normal');pdf.setFontSize(10);pdf.setTextColor(120,100,90);
+    const nm=document.getElementById('f_name').value.trim()||'the candidate';
+    pdf.text(`Additional photos of ${nm}`,pw/2,31,{align:'center'});
+    const all=[mainPhoto,...extras.filter(Boolean)];
+    const cols=2,margin=20,gap=8,cw=(pw-margin*2-gap*(cols-1))/cols,ch=70;
+    let x=margin,y=44,col=0;
+    for(const url of all){
+      const{w,h}=await loadSz(url);const ratio=Math.min(cw/w,ch/h);const dw=w*ratio,dh=h*ratio;
+      const ox=x+(cw-dw)/2,oy=y+(ch-dh)/2;
+      pdf.setDrawColor(210,190,150);pdf.roundedRect(x,y,cw,ch,2,2);
+      pdf.addImage(url,'JPEG',ox,oy,dw,dh);
+      col++;if(col>=cols){col=0;x=margin;y+=ch+gap;}else{x+=cw+gap;}
+    }
+    pdf.setPage(gPage);
+  }
+  const fn=(document.getElementById('f_name').value.trim()||'biodata').replace(/\s+/g,'_')+'_Biodata.pdf';
+  pdf.save(fn);
+}
+
+/* ===================== LOCALSTORAGE ===================== */
+const TF=['f_name','f_dob','f_tob','f_pob','f_height','f_religion','f_caste','f_subcaste','f_gotra','f_manglik','f_rashi','f_nakshatra','f_complexion','f_blood','f_edu','f_occ','f_income','f_hobbies','f_father','f_father_occ','f_mother','f_mother_occ','f_values','f_native','f_aboutme','f_prefs','f_phone','f_whatsapp','f_email','f_address'];
+function save(){
+  const data={};
+  TF.forEach(id=>{const el=document.getElementById(id);if(el)data[id]=el.value;});
+  data.famtype=(document.querySelector('input[name="famtype"]:checked')||{}).value;
+  data.theme=curTheme;data.template=curTpl;
+  data.siblings=[...document.querySelectorAll('#siblingList .repeat-row')].map(r=>({name:r.querySelector('.s-name').value,rel:r.querySelector('.s-rel').value,occ:r.querySelector('.s-occ').value}));
+  data.relatives=[...document.querySelectorAll('#relativeList .repeat-row')].map(r=>({rel:r.querySelector('.r-rel').value,name:r.querySelector('.r-name').value,occ:r.querySelector('.r-occ').value,sn:r.querySelector('.r-spouse').value,so:r.querySelector('.r-spouse-occ').value}));
+  try{localStorage.setItem('sv_data',JSON.stringify(data));}catch(e){}
+}
+function load(){
+  try{
+    const raw=localStorage.getItem('sv_data');if(!raw)return false;
+    const data=JSON.parse(raw);
+    TF.forEach(id=>{const el=document.getElementById(id);if(el&&data[id]!==undefined)el.value=data[id];});
+    if(data.famtype){const rb=document.querySelector(`input[name="famtype"][value="${data.famtype}"]`);if(rb)rb.checked=true;}
+    if(data.theme){curTheme=data.theme;document.body.dataset.theme=curTheme;document.querySelectorAll('.swatch').forEach(s=>s.classList.toggle('active',s.dataset.t===curTheme));}
+    if(data.template){curTpl=data.template;document.querySelectorAll('.tpl-card').forEach(c=>c.classList.toggle('active',c.dataset.tpl===curTpl));}
+    if(data.siblings)data.siblings.forEach(s=>addSiblingRow(s));
+    if(data.relatives)data.relatives.forEach(r=>addRelativeRow(r));
+    const am=document.getElementById('f_aboutme');if(am)document.getElementById('cnt_about').textContent=am.value.length;
+    const pr=document.getElementById('f_prefs');if(pr)document.getElementById('cnt_prefs').textContent=pr.value.length;
+    return true;
+  }catch(e){return false;}
+}
+
+/* ===================== INIT ===================== */
+const restored=load();
+if(!restored){addSiblingRow();addRelativeRow();}
+renderCard();
+</script>
+</body>
+</html>
