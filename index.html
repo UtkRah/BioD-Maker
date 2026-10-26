@@ -79,6 +79,17 @@ legend .n{width:20px;height:20px;border-radius:50%;background:var(--pr);color:#f
 .rg label{display:flex;align-items:center;gap:5px;font-size:.85rem;text-transform:none;color:var(--ink);font-weight:500;cursor:pointer;}
 .rg input{width:auto;}
 .rr{border:1px dashed var(--ln);border-radius:8px;padding:9px;margin-bottom:8px;position:relative;background:var(--bg);}
+.rr{padding-left:32px;}
+.rr .dh{position:absolute;left:5px;top:7px;width:20px;height:22px;display:flex;align-items:center;justify-content:center;cursor:grab;color:var(--sub);font-size:.95rem;letter-spacing:-2px;user-select:none;border-radius:4px;}
+.rr .dh:hover{background:var(--aa);color:var(--pr);}
+.rr .dh:active{cursor:grabbing;}
+.rr .mvs{position:absolute;left:5px;top:34px;display:flex;flex-direction:column;gap:2px;}
+.rr .mvs button{width:20px;height:18px;border:1px solid var(--ln);background:var(--pn);color:var(--sub);cursor:pointer;font-size:.55rem;padding:0;border-radius:4px;line-height:1;}
+.rr .mvs button:hover{color:var(--pr);border-color:var(--pr);}
+.rr .mvs button:disabled{opacity:.3;cursor:default;}
+.rr.dragging{opacity:.45;border-style:solid;border-color:var(--ac);}
+.rr.drop-before{box-shadow:0 -3px 0 0 var(--ac);}
+.rr.drop-after{box-shadow:0 3px 0 0 var(--ac);}
 .rr .rm{position:absolute;top:6px;right:6px;background:none;border:none;color:var(--sub);cursor:pointer;font-size:.88rem;padding:2px 4px;border-radius:4px;}
 .rr .rm:hover{color:#b92b2b;}
 .arb{width:100%;padding:7px;border:1.5px dashed var(--pr);border-radius:7px;background:none;color:var(--pr);font-weight:600;cursor:pointer;font-size:.81rem;}
@@ -732,12 +743,13 @@ table.dt td.v{color:var(--ink);font-weight:500;}
       <legend><span class="n">6</span>Siblings</legend>
       <div id="sibList"></div>
       <button type="button" class="arb" id="addSib">+ Add Sibling</button>
+      <p class="hint">Drag ⠿ or use ▲▼ to change the order shown on the biodata.</p>
     </fieldset>
     <fieldset>
       <legend><span class="n">7</span>Grandparents, Uncles &amp; Aunts</legend>
       <div id="relList"></div>
       <button type="button" class="arb" id="addRel">+ Add Relative</button>
-      <p class="hint">Add the relative and their spouse together (e.g. Chacha + Chachi, Dada + Dadi).</p>
+      <p class="hint">Add the relative and their spouse together (e.g. Chacha + Chachi, Dada + Dadi). Drag ⠿ or use ▲▼ to reorder — e.g. put Dada–Dadi and Nana–Nani above uncles.</p>
     </fieldset>
     <fieldset>
       <legend><span class="n">8</span>About Me</legend>
@@ -1211,10 +1223,38 @@ $('f_fit').addEventListener('change',oi);
 $('f_about').addEventListener('input',e=>$('c_about').textContent=e.target.value.length);
 $('f_prefs').addEventListener('input',e=>$('c_prefs').textContent=e.target.value.length);
 
+/* DRAG & DROP REORDER — siblings, relatives, custom fields */
+let dragRow=null;
+function refreshMv(list){const rows=[...list.querySelectorAll(':scope>.rr')];rows.forEach((r,i)=>{const[u,d]=r.querySelectorAll('.mvs button');if(u)u.disabled=i===0;if(d)d.disabled=i===rows.length-1;});}
+function sortable(w,list){
+  const tools=document.createElement('div');
+  tools.innerHTML=`<div class="dh" title="Drag to reorder">⠿</div><div class="mvs"><button type="button" title="Move up">▲</button><button type="button" title="Move down">▼</button></div>`;
+  w.prepend(...tools.children);
+  const dh=w.querySelector('.dh'),[up,dn]=w.querySelectorAll('.mvs button');
+  up.addEventListener('click',()=>{const p=w.previousElementSibling;if(p){list.insertBefore(w,p);refreshMv(list);oi();}});
+  dn.addEventListener('click',()=>{const n=w.nextElementSibling;if(n){list.insertBefore(n,w);refreshMv(list);oi();}});
+  dh.addEventListener('mousedown',()=>{w.draggable=true;});
+  dh.addEventListener('mouseup',()=>{w.draggable=false;});
+  dh.addEventListener('touchstart',()=>{w.draggable=true;},{passive:true});
+  w.addEventListener('dragstart',e=>{if(!w.draggable){e.preventDefault();return;}dragRow=w;w.classList.add('dragging');e.dataTransfer.effectAllowed='move';try{e.dataTransfer.setData('text/plain','');}catch(_){}});
+  w.addEventListener('dragend',()=>{w.draggable=false;w.classList.remove('dragging');list.querySelectorAll('.rr').forEach(r=>r.classList.remove('drop-before','drop-after'));if(dragRow){dragRow=null;refreshMv(list);oi();}});
+  if(!list.dataset.sortable){list.dataset.sortable=1;
+    list.addEventListener('dragover',e=>{if(!dragRow||dragRow.parentElement!==list)return;e.preventDefault();e.dataTransfer.dropEffect='move';
+      const t=e.target.closest('.rr');list.querySelectorAll('.rr').forEach(r=>r.classList.remove('drop-before','drop-after'));
+      if(!t||t===dragRow)return;const r=t.getBoundingClientRect(),after=e.clientY>r.top+r.height/2;
+      t.classList.add(after?'drop-after':'drop-before');
+      if(after)t.after(dragRow);else t.before(dragRow);});
+    list.addEventListener('drop',e=>{if(dragRow)e.preventDefault();});
+  }
+  list.appendChild(w);refreshMv(list);
+}
+const _rm=e=>{const b=e.target.closest('.rr .rm');if(b){const l=b.closest('.rr').parentElement;setTimeout(()=>refreshMv(l),0);}};
+['sibList','relList','cfList'].forEach(id=>$(id).addEventListener('click',_rm));
+
 /* SIBLINGS */
 function addSib(data){const w=document.createElement('div');w.className='rr';const R=['Elder Brother','Younger Brother','Elder Sister','Younger Sister'];const M=['','Married','Unmarried'];
   w.innerHTML=`<button type="button" class="rm">✕</button><div class="fi"><label>Name</label><input class="sn" placeholder="Sibling's name" value="${esc(data?.name)}"></div><div class="r3"><div class="fi"><label>Relation</label><select class="sr">${R.map(r=>`<option${data?.rel===r?' selected':''}>${r}</option>`).join('')}</select></div><div class="fi"><label>Occupation</label><input class="so" placeholder="e.g. Doctor" value="${esc(data?.occ)}"></div><div class="fi"><label>Status</label><select class="sm">${M.map(m=>`<option value="${m}"${(data?.ms||'')===m?' selected':''}>${m||'—'}</option>`).join('')}</select></div></div>`;
-  w.querySelector('.rm').addEventListener('click',()=>{w.remove();oi();});w.querySelectorAll('input,select').forEach(el=>el.addEventListener('input',oi));$('sibList').appendChild(w);}
+  w.querySelector('.rm').addEventListener('click',()=>{w.remove();oi();});w.querySelectorAll('input,select').forEach(el=>el.addEventListener('input',oi));sortable(w,$('sibList'));}
 $('addSib').addEventListener('click',()=>{addSib();rc();});
 
 /* RELATIVES */
@@ -1222,13 +1262,13 @@ const RELS=[["Dada (Paternal Grandfather)",'Dada','Dadi'],["Nana (Maternal Grand
 function addRel(data){const w=document.createElement('div');w.className='rr';const def=data?.rel||"Chacha|Chachi";const opts=RELS.map(([lbl,b,s])=>`<option value="${b}|${s}"${def===`${b}|${s}`?' selected':''}>${lbl}</option>`).join('');
   w.innerHTML=`<button type="button" class="rm">✕</button><div class="fi"><label>Relation</label><select class="rrl">${opts}</select></div><div class="r2"><div class="fi"><label class="rnl">Name</label><input class="rn" placeholder="Name" value="${esc(data?.name)}"></div><div class="fi"><label class="rol">Occupation</label><input class="ro" placeholder="Optional" value="${esc(data?.occ)}"></div></div><div class="r2"><div class="fi"><label class="rsl">Spouse Name</label><input class="rs" placeholder="Optional" value="${esc(data?.sn)}"></div><div class="fi"><label class="rsol">Spouse Occupation</label><input class="rso" placeholder="Optional" value="${esc(data?.so)}"></div></div>`;
   const upd=()=>{const[bT,sT]=w.querySelector('.rrl').value.split('|');w.querySelector('.rnl').textContent=`${bT}'s Name`;w.querySelector('.rol').textContent=`${bT}'s Occupation`;w.querySelector('.rsl').textContent=`${sT}'s Name`;w.querySelector('.rsol').textContent=`${sT}'s Occupation`;};upd();
-  w.querySelector('.rrl').addEventListener('change',()=>{upd();oi();});w.querySelector('.rm').addEventListener('click',()=>{w.remove();oi();});w.querySelectorAll('input,select').forEach(el=>el.addEventListener('input',oi));$('relList').appendChild(w);}
+  w.querySelector('.rrl').addEventListener('change',()=>{upd();oi();});w.querySelector('.rm').addEventListener('click',()=>{w.remove();oi();});w.querySelectorAll('input,select').forEach(el=>el.addEventListener('input',oi));sortable(w,$('relList'));}
 $('addRel').addEventListener('click',()=>{addRel();rc();});
 
 /* CUSTOM FIELDS */
 function addCF(data){const w=document.createElement('div');w.className='rr';
   w.innerHTML=`<button type="button" class="rm">✕</button><div class="r2"><div class="fi"><label>Label</label><input class="ck2" placeholder="e.g. Visa Status" value="${esc(data?.k)}"></div><div class="fi"><label>Value</label><input class="cv2" placeholder="e.g. Indian Citizen" value="${esc(data?.v)}"></div></div>`;
-  w.querySelector('.rm').addEventListener('click',()=>{w.remove();oi();});w.querySelectorAll('input').forEach(el=>el.addEventListener('input',oi));$('cfList').appendChild(w);}
+  w.querySelector('.rm').addEventListener('click',()=>{w.remove();oi();});w.querySelectorAll('input').forEach(el=>el.addEventListener('input',oi));sortable(w,$('cfList'));}
 $('addCF').addEventListener('click',()=>{addCF();$('cfList').lastElementChild.querySelector('input').focus();});
 
 /* PHOTOS */
